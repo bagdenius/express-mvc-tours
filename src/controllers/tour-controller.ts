@@ -19,6 +19,11 @@ export async function getTours(request: Request, response: Response) {
       query = query.sort(sortBy);
     } else query = query.sort('-createdAt');
 
+    if (fields) {
+      const fieldsString = fields.split(',').join(' ');
+      query = query.select(fieldsString);
+    } else query.select('-__v');
+
     const tours = await query;
     response
       .status(200)
