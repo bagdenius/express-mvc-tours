@@ -1,5 +1,6 @@
 import { model, Schema } from 'mongoose';
 import slugify from 'slugify';
+import validator from 'validator';
 
 // export interface ITour {
 //   _id: string;
@@ -21,28 +22,48 @@ const tourSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Tour must have a name'],
+      required: [true, 'Tour should have a name'],
       unique: true,
       trim: true,
+      maxlength: [40, 'Tour name should have less or equal then 40 characters'],
+      minlength: [10, 'Tour name should have more or equal then 10 characters'],
     },
     slug: { type: String },
-    duration: { type: Number, required: [true, 'Tour must have a duration'] },
+    duration: { type: Number, required: [true, 'Tour should have a duration'] },
     maxGroupSize: {
       type: Number,
-      required: [true, 'Tour must have a group size'],
+      required: [true, 'Tour should have a group size'],
     },
     difficulty: {
       type: String,
-      required: [true, 'Tour must have a difficulty'],
+      required: [true, 'Tour should have a difficulty'],
       trim: true,
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Tour difficulty is either easy, medium or difficult',
+      },
     },
-    ratingsAverage: { type: Number, default: 0 },
+    ratingsAverage: {
+      type: Number,
+      default: 0,
+      min: [1, 'Tour rating must be above 1.0'],
+      max: [5, 'Tour rating must be below 5.0'],
+    },
     ratingsQuantity: { type: Number, default: 0 },
-    price: { type: Number, required: [true, 'Tour must have a price'] },
-    priceDiscount: { type: Number },
+    price: { type: Number, required: [true, 'Tour should have a price'] },
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (discount) {
+          return discount < this.price;
+        },
+        message:
+          'Tour price discount ({VALUE}) should be less than regular price',
+      },
+    },
     summary: {
       type: String,
-      required: [true, 'Tour must have a description'],
+      required: [true, 'Tour should have a description'],
       trim: true,
     },
     description: { type: String, trim: true },
@@ -68,12 +89,6 @@ tourSchema.pre('save', function () {
 
 tourSchema.pre(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
-  this.start = Date.now();
-});
-
-tourSchema.post(/^find/, function (result, next) {
-  console.log(`Query took ${Date.now() - this.start} miliseconds`);
-  next();
 });
 
 tourSchema.pre('aggregate', function () {
