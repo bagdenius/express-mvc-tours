@@ -1,7 +1,20 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { Tour } from '~/models/tour-model.js';
 
+export function aliasTopTours(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) {
+  request.query = {
+    ...request.query,
+    limit: '5',
+    sort: '-ratingsAverage,price',
+    fields: 'name,price,ratingsAverage,summary,difficulty',
+  };
+  next();
+}
 export async function getTours(request: Request, response: Response) {
   try {
     const {

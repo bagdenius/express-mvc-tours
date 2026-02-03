@@ -13,6 +13,15 @@ if (process.env.NODE_ENV === 'development') {
 
 app.set('query parser', 'extended');
 
+app.use((req, res, next) => {
+  Object.defineProperty(req, 'query', {
+    ...Object.getOwnPropertyDescriptor(req, 'query'),
+    value: req.query,
+    writable: true,
+  });
+  next();
+});
+
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
