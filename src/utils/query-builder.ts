@@ -51,8 +51,8 @@ export class QueryBuilder<ResultType, DocType> {
   selectFields() {
     if (this.queryFields) {
       const fields = this.queryFields.split(',').join(' ');
-      this.query = this.query.select(fields);
-    } else this.query = this.query.select('-__v');
+      this.query = this.query.select(fields) as Query<ResultType, DocType>;
+    } else this.query = this.query.select('-__v') as Query<ResultType, DocType>;
     return this;
   }
 

@@ -1,9 +1,29 @@
 import type { NextFunction, Request, Response } from 'express';
+import { Error } from 'mongoose';
 
-import type { AppError } from '../utils/app-error.ts';
+import { AppError } from '../utils/app-error.ts';
 
-function sendErrorDevelopment(error: AppError, response: Response) {
-  response.status(error.code).json({
+function handleCastErrorDB(error: Error.CastError) {
+  const message = `Invalid ${error.path}: ${error.value}`;
+  return new AppError(message, 400);
+}
+
+function handleDuplicateFieldsDB(error) {
+  const value = error.errmsg.match(/(["'])(\\?.)*?\1/).at(0);
+  const message = `Duplicate field value: ${value}. Please use another value!`;
+  return new AppError(message, 400);
+}
+
+function handleValidationErrorDB(error: Error.ValidationError) {
+  const errors = Object.values(error.errors).map(
+    (err, i) => `${i + 1}) ${err.message}`,
+  );
+  const message = `Invalid input data: ${errors.join('; ')}`;
+  return new AppError(message, 400);
+}
+
+function sendErrorDevelopment(error: any, response: Response) {
+  response.status(error.statusCode).json({
     status: error.status,
     message: error.message,
     error: error,
@@ -11,14 +31,13 @@ function sendErrorDevelopment(error: AppError, response: Response) {
   });
 }
 
-function sendErrorProduction(error: AppError, response: Response) {
+function sendErrorProduction(error: any, response: Response) {
   if (error.isOperational)
     response
-      .status(error.code)
+      .status(error.statusCode)
       .json({ status: error.status, message: error.message });
   else {
     console.error('ERROR 💥', error);
-
     response
       .status(500)
       .json({ status: 'error', message: 'Something went wrong!' });
@@ -26,15 +45,23 @@ function sendErrorProduction(error: AppError, response: Response) {
 }
 
 export function globalErrorHandler(
-  error: AppError,
+  err: any,
   request: Request,
   response: Response,
   next: NextFunction,
 ) {
-  error.code = error.code || 500;
-  error.status = error.status || 'error';
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development')
-    sendErrorDevelopment(error, response);
-  else if (process.env.NODE_ENV === 'production')
+    sendErrorDevelopment(err, response);
+  else if (process.env.NODE_ENV === 'production') {
+    let error = Object.create(err);
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
+    if (error.name === 'MongoServerError' && error.code === 11000)
+      error = handleDuplicateFieldsDB(error);
+    if (error.name === 'ValidationError')
+      error = handleValidationErrorDB(error);
+
     sendErrorProduction(error, response);
+  }
 }
