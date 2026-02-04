@@ -1,6 +1,5 @@
-import { model, Schema } from 'mongoose';
+import { model, Query, Schema } from 'mongoose';
 import slugify from 'slugify';
-import validator from 'validator';
 
 // export interface ITour {
 //   _id: string;
@@ -54,7 +53,7 @@ const tourSchema = new Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function (discount) {
+        validator: function (discount: number) {
           return discount < this.price;
         },
         message:
@@ -88,7 +87,7 @@ tourSchema.pre('save', function () {
 });
 
 tourSchema.pre(/^find/, function () {
-  this.find({ secretTour: { $ne: true } });
+  (this as Query<any, any>).find({ secretTour: { $ne: true } });
 });
 
 tourSchema.pre('aggregate', function () {

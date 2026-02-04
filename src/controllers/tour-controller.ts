@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { Tour } from '~/models/tour-model.js';
-import { QueryBuilder } from '~/utils/query-builder.js';
+import { Tour } from '../models/tour-model.ts';
+import { QueryBuilder } from '../utils/query-builder.ts';
 
 export function aliasTopTours(
   request: Request,

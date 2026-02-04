@@ -9,7 +9,7 @@ import {
   getTours,
   getTourStats,
   updateTour,
-} from '../controllers/tour-controller.js';
+} from '../controllers/tour-controller.ts';
 
 export const router = express.Router();
 

@@ -8,14 +8,15 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "tsx watch src/server.ts",
+    "start": "node src/server.ts",
+    "dev": "node --watch src/server.ts",
+    "debug": "ndb node src/server.ts",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
-    "data:import": "node -r ts-node/register -r tsconfig-paths/register src/dev-data/data/import-dev-data.ts --import",
-    "data:delete": "node -r ts-node/register -r tsconfig-paths/register src/dev-data/data/import-dev-data.ts --delete"
+    "data:import": "node src/dev-data/data/import-dev-data.ts --import",
+    "data:delete": "node src/dev-data/data/import-dev-data.ts --delete"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
@@ -38,6 +39,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unicorn": "^62.0.0",
     "jiti": "^2.6.1",
+    "ndb": "^1.1.5",
     "prettier": "^3.8.1",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",

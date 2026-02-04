@@ -1,11 +1,11 @@
-import '../../load-env.ts';
+import '../../load-env.js';
 
 import fs from 'node:fs';
 
 import mongoose from 'mongoose';
 
-import { Tour } from '../../models/tour-model.ts';
-import { __dirname } from '../../utils.ts';
+import { Tour } from '../../models/tour-model.js';
+import { __dirname } from '../../utils.js';
 
 const DB = process.env.DATABASE!.replace(
   '<PASSWORD>',

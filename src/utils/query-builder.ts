@@ -35,7 +35,7 @@ export class QueryBuilder<ResultType, DocType> {
         (match) => `$${match}`,
       ),
     );
-    this.query = this.query.find(searchQuery);
+    this.query = this.query.find(searchQuery) as Query<ResultType, DocType>;
     return this;
   }
 

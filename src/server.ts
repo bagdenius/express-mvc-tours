@@ -1,8 +1,8 @@
-import './load-env.js';
+import './load-env.ts';
 
 import mongoose from 'mongoose';
 
-import { app } from './app.js';
+import { app } from './app.ts';
 
 const DB = process.env.DATABASE!.replace(
   '<PASSWORD>',
