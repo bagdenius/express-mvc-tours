@@ -3,7 +3,7 @@ import morgan from 'morgan';
 
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
-import { __dirname } from './utils.ts';
+import { __dirname } from './utils/path.ts';
 import { AppError } from './utils/app-error.ts';
 import { globalErrorHandler } from './controllers/error-controller.ts';
 

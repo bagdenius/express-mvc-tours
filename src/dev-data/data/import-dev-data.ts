@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import mongoose from 'mongoose';
 
 import { Tour } from '../../models/tour-model.js';
-import { __dirname } from '../../utils.js';
+import { __dirname } from '../../utils/path.ts';
 
 const DB = process.env.DATABASE!.replace(
   '<PASSWORD>',
