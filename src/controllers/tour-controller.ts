@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { Tour } from '../models/tour-model.ts';
+import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { QueryBuilder } from '../utils/query-builder.ts';
 
@@ -35,6 +36,7 @@ export const getTours = catchAsync(
 export const getTour = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
     const tour = await Tour.findById(request.params.id);
+    if (!tour) return next(new AppError('Tour not found', 404));
     response.status(200).json({ status: 'success', data: { tour } });
   },
 );
@@ -52,13 +54,15 @@ export const updateTour = catchAsync(
       new: true,
       runValidators: true,
     });
+    if (!tour) return next(new AppError('Tour not found', 404));
     response.status(200).json({ status: 'success', data: { tour } });
   },
 );
 
 export const deleteTour = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
-    await Tour.findByIdAndDelete(request.params.id);
+    const tour = await Tour.findByIdAndDelete(request.params.id);
+    if (!tour) return next(new AppError('Tour not found', 404));
     response.status(204).send();
   },
 );

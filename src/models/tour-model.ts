@@ -1,5 +1,6 @@
 import { model, Query, Schema } from 'mongoose';
 import slugify from 'slugify';
+import { AppError } from '../utils/app-error.ts';
 
 // export interface ITour {
 //   _id: string;

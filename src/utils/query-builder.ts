@@ -2,7 +2,7 @@ import type { Query } from 'mongoose';
 import type QueryString from 'qs';
 
 export class QueryBuilder<ResultType, DocType> {
-  private query: Query<ResultType, DocType>;
+  public query: Query<ResultType, DocType>;
   private queryObject;
   private queryFields: string;
   private querySort: string;
