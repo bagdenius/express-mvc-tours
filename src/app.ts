@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
 import { __dirname } from './utils.ts';
+import { AppError } from './utils/app-error.ts';
+import { globalErrorHandler } from './controllers/error-controller.ts';
 
 export const app = express();
 
@@ -29,16 +31,7 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.use((request, response, next) => {
-  const error = new Error(`Can't find ${request.originalUrl} on this server!`);
-  error.status = 'fail';
-  error.code = 404;
-  next(error);
+  next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });
 
-app.use((error, request, response, next) => {
-  error.code = error.code || 500;
-  error.status = error.status || 'error';
-  response
-    .status(error.code)
-    .json({ status: error.status, message: error.message });
-});
+app.use(globalErrorHandler);

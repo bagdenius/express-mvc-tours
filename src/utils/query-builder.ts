@@ -2,12 +2,12 @@ import type { Query } from 'mongoose';
 import type QueryString from 'qs';
 
 export class QueryBuilder<ResultType, DocType> {
-  query: Query<ResultType, DocType>;
-  queryObject;
-  queryFields: string;
-  querySort: string;
-  queryPage: string;
-  queryLimit: string;
+  private query: Query<ResultType, DocType>;
+  private queryObject;
+  private queryFields: string;
+  private querySort: string;
+  private queryPage: string;
+  private queryLimit: string;
 
   constructor(
     query: Query<ResultType, DocType>,
