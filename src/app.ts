@@ -1,11 +1,11 @@
 import express from 'express';
 import morgan from 'morgan';
 
+import { globalErrorHandler } from './controllers/error-controller.ts';
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
-import { __dirname } from './utils/path.ts';
 import { AppError } from './utils/app-error.ts';
-import { globalErrorHandler } from './controllers/error-controller.ts';
+import { __dirname } from './utils/path.ts';
 
 export const app = express();
 

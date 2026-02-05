@@ -1,24 +1,26 @@
 import { model, Query, Schema } from 'mongoose';
 import slugify from 'slugify';
-import { AppError } from '../utils/app-error.ts';
 
-// export interface ITour {
-//   _id: string;
-//   name: string;
-//   duration: number;
-//   maxGroupSize: number;
-//   difficulty: 'easy' | 'medium' | 'difficult';
-//   ratingsAverage: number;
-//   ratingsQuantity: number;
-//   price: number;
-//   summary: string;
-//   description: string;
-//   imageCover: string;
-//   images: string[];
-//   startDates: string[];
-// }
+export interface ITour {
+  name: string;
+  slug: string;
+  duration: number;
+  maxGroupSize: number;
+  difficulty: string;
+  ratingsAverage: number;
+  ratingsQuantity: number;
+  price: number;
+  priceDiscount: number;
+  summary: string;
+  description: string;
+  imageCover: string;
+  images: string[];
+  createdAt: Date;
+  startDates: Date[];
+  secretTour: boolean;
+}
 
-const tourSchema = new Schema(
+const tourSchema = new Schema<ITour>(
   {
     name: {
       type: String,
@@ -55,7 +57,7 @@ const tourSchema = new Schema(
       type: Number,
       validate: {
         validator: function (discount: number) {
-          return discount < this.price;
+          return discount < (this as ITour).price;
         },
         message:
           'Tour price discount ({VALUE}) should be less than regular price',
@@ -87,12 +89,12 @@ tourSchema.pre('save', function () {
   this.slug = slugify.default(this.name, { lower: true });
 });
 
-tourSchema.pre(/^find/, function () {
-  (this as Query<any, any>).find({ secretTour: { $ne: true } });
+tourSchema.pre<Query<ITour, ITour>>(/^find/, function () {
+  this.find({ secretTour: { $ne: true } });
 });
 
 tourSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 });
 
-export const Tour = model('Tour', tourSchema);
+export const Tour = model<ITour>('Tour', tourSchema);
