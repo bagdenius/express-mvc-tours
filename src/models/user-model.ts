@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import validator from 'validator';
 
@@ -41,6 +42,12 @@ const userSchema = new Schema<IUser>({
       message: 'Passwords should match',
     },
   },
+});
+
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+  this.password = await bcrypt.hash(this.password, 12);
+  this.confirmPassword = undefined;
 });
 
 export const User = model<IUser>('User', userSchema);
