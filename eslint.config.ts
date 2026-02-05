@@ -3,7 +3,7 @@ import vitest from '@vitest/eslint-plugin';
 import { defineConfig } from 'eslint/config';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+// import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
@@ -27,7 +27,7 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
-          argsIgnorePattern: '^_',
+          argsIgnorePattern: '^_|request|response|next',
           varsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_',
         },

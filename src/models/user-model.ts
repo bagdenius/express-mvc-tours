@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import validator from 'validator';
 
@@ -7,7 +7,8 @@ export interface IUser {
   email: string;
   photo: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
+  isCorrectPassword(password: string, encrypted: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>({
@@ -31,6 +32,7 @@ const userSchema = new Schema<IUser>({
     type: String,
     minlength: [8, 'Password should be at least 8 characters'],
     required: [true, 'Please enter a password'],
+    select: false,
   },
   confirmPassword: {
     type: String,
@@ -46,8 +48,13 @@ const userSchema = new Schema<IUser>({
 
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await hash(this.password, 12);
   this.confirmPassword = undefined;
 });
+
+userSchema.methods.isCorrectPassword = async (
+  password: string,
+  encrypted: string,
+) => await compare(password, encrypted);
 
 export const User = model<IUser>('User', userSchema);
