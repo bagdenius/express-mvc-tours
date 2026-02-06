@@ -1,5 +1,3 @@
-import { promisify } from 'node:util';
-
 import type { NextFunction, Request, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Types } from 'mongoose';
@@ -7,6 +5,7 @@ import type { Types } from 'mongoose';
 import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
+import { sendEmail } from '../utils/email.ts';
 
 const signToken = (id: Types.ObjectId) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -90,3 +89,41 @@ export const restrictTo =
       );
     next();
   };
+
+export const forgotPassword = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const user = await User.findOne({ email: request.body.email });
+    if (!user)
+      return next(new AppError('No user found with provided email', 404));
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+    const resetURL = `${request.protocol}://${request.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password please ignore this message.`;
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Your password reset token (valid for 10 min)',
+        message,
+      });
+    } catch (_) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+      return next(
+        new AppError(
+          'An error occured while sending the email. Try again later',
+          500,
+        ),
+      );
+    }
+    response
+      .status(200)
+      .json({ status: 'success', message: 'Token sent to email' });
+  },
+);
+
+export const resetPassword = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {};

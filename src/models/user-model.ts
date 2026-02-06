@@ -1,3 +1,5 @@
+import { createHash, randomBytes } from 'node:crypto';
+
 import { compare, hash } from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import validator from 'validator';
@@ -10,8 +12,12 @@ export interface IUser {
   password: string;
   confirmPassword?: string;
   passwordChangedAt?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+
   isCorrectPassword(password: string, encrypted: string): Promise<boolean>;
   isPasswordChangedAfter(jwtTimestamp: number): boolean;
+  createPasswordResetToken(): string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -54,6 +60,8 @@ const userSchema = new Schema<IUser>(
       },
     },
     passwordChangedAt: { type: Date },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   {
     methods: {
@@ -67,6 +75,17 @@ const userSchema = new Schema<IUser>(
         }
         return false;
       },
+
+      createPasswordResetToken: function () {
+        const resetToken = randomBytes(32).toString('hex');
+        this.resetPasswordToken = createHash('sha256')
+          .update(resetToken)
+          .digest('hex');
+        this.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
+        // console.log(resetToken, this.resetPasswordToken);
+
+        return resetToken;
+      },
     },
   },
 );
@@ -76,20 +95,5 @@ userSchema.pre('save', async function () {
   this.password = await hash(this.password, 12);
   this.confirmPassword = undefined;
 });
-
-// userSchema.methods.isCorrectPassword = async (
-//   password: string,
-//   encrypted: string,
-// ) => await compare(password, encrypted);
-
-// userSchema.methods.isPasswordChangedAfter = function (
-//   this: IUser,
-//   jwtTimestamp: number,
-// ) {
-//   if (this.passwordChangedAt) {
-//     console.log(this.passwordChangedAt, jwtTimestamp);
-//   }
-//   return false;
-// };
 
 export const User = model<IUser>('User', userSchema);
