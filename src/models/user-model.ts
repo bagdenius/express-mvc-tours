@@ -12,8 +12,8 @@ export interface IUser {
   password: string;
   confirmPassword?: string;
   passwordChangedAt?: Date;
-  resetPasswordToken?: string;
-  resetPasswordExpires?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
 
   isCorrectPassword(password: string, encrypted: string): Promise<boolean>;
   isPasswordChangedAfter(jwtTimestamp: number): boolean;
@@ -60,8 +60,8 @@ const userSchema = new Schema<IUser>(
       },
     },
     passwordChangedAt: { type: Date },
-    resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
+    passwordResetToken: { type: String },
+    passwordResetExpires: { type: Date },
   },
   {
     methods: {
@@ -78,12 +78,10 @@ const userSchema = new Schema<IUser>(
 
       createPasswordResetToken: function () {
         const resetToken = randomBytes(32).toString('hex');
-        this.resetPasswordToken = createHash('sha256')
+        this.passwordResetToken = createHash('sha256')
           .update(resetToken)
           .digest('hex');
-        this.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
-        // console.log(resetToken, this.resetPasswordToken);
-
+        this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
         return resetToken;
       },
     },
@@ -94,6 +92,11 @@ userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await hash(this.password, 12);
   this.confirmPassword = undefined;
+});
+
+userSchema.pre('save', function () {
+  if (!this.isModified('password') || this.isNew) return;
+  this.passwordChangedAt = new Date(Date.now() - 1000);
 });
 
 export const User = model<IUser>('User', userSchema);

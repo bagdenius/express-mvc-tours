@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import type { NextFunction, Request, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Types } from 'mongoose';
@@ -97,7 +99,7 @@ export const forgotPassword = catchAsync(
       return next(new AppError('No user found with provided email', 404));
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-    const resetURL = `${request.protocol}://${request.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+    const resetURL = `${request.protocol}://${request.get('host')}/api/v1/users/reset-password/${resetToken}`;
     const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password please ignore this message.`;
     try {
       await sendEmail({
@@ -106,8 +108,8 @@ export const forgotPassword = catchAsync(
         message,
       });
     } catch (_) {
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpires = undefined;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
       return next(
         new AppError(
@@ -122,8 +124,25 @@ export const forgotPassword = catchAsync(
   },
 );
 
-export const resetPassword = (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) => {};
+export const resetPassword = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const passwordResetToken = createHash('sha256')
+      .update(request.params.token as string)
+      .digest('hex');
+    const user = await User.findOne({
+      passwordResetToken,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+    if (!user)
+      return next(
+        new AppError('Password reset token is invalid or has expired', 400),
+      );
+    user.password = request.body.password;
+    user.confirmPassword = request.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    const token = signToken(user._id);
+    response.status(200).json({ status: 'success', token });
+  },
+);
