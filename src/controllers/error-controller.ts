@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { Error } from 'mongoose';
 
 import { AppError } from '../utils/app-error.ts';
+import type { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 function handleCastErrorDB(error: Error.CastError) {
   const message = `Invalid ${error.path}: ${error.value}`;
@@ -21,6 +22,12 @@ function handleValidationErrorDB(error: Error.ValidationError) {
   const message = `Invalid input data: ${errors.join('; ')}`;
   return new AppError(message, 400);
 }
+
+const handleJsonWebTokenError = () =>
+  new AppError('Invalid authorization token. Please log in again', 401);
+
+const handleTokenExpiredError = () =>
+  new AppError('Your token has expired. Please log in again', 401);
 
 function sendErrorDevelopment(error: any, response: Response) {
   response.status(error.statusCode).json({
@@ -53,15 +60,16 @@ export function globalErrorHandler(
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development')
-    sendErrorDevelopment(err, response);
-  else if (process.env.NODE_ENV === 'production') {
+    return sendErrorDevelopment(err, response);
+  if (process.env.NODE_ENV === 'production') {
     let error = Object.create(err);
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.name === 'MongoServerError' && error.code === 11000)
       error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
-
+    if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError();
+    if (error.name === 'TokenExpiredError') error = handleTokenExpiredError();
     sendErrorProduction(error, response);
   }
 }

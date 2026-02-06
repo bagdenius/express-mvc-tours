@@ -1,5 +1,6 @@
 import express from 'express';
 
+import { protect } from '../controllers/auth-controller.ts';
 import {
   aliasTopTours,
   createTour,
@@ -17,5 +18,5 @@ router.route('/top-5').get(aliasTopTours, getTours);
 router.route('/stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
-router.route('/').get(getTours).post(createTour);
+router.route('/').get(protect, getTours).post(createTour);
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
