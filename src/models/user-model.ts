@@ -6,6 +6,7 @@ export interface IUser {
   name: string;
   email: string;
   photo: string;
+  role: 'user' | 'guide' | 'lead-guide' | 'admin';
   password: string;
   confirmPassword?: string;
   passwordChangedAt?: Date;
@@ -31,6 +32,11 @@ const userSchema = new Schema<IUser>(
       validate: [validator.isEmail, 'Please enter a valid email'],
     },
     photo: { type: String },
+    role: {
+      type: String,
+      enum: ['user', 'guide', 'lead-guide', 'admin'],
+      default: 'user',
+    },
     password: {
       type: String,
       minlength: [8, 'Password should be at least 8 characters'],
