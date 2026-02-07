@@ -1,5 +1,6 @@
-import express from 'express';
+import express, { urlencoded } from 'express';
 import { rateLimit } from 'express-rate-limit';
+import helmet from 'helmet';
 import morgan from 'morgan';
 
 import { globalErrorHandler } from './controllers/error-controller.ts';
@@ -9,12 +10,21 @@ import { AppError } from './utils/app-error.ts';
 import { __dirname } from './utils/path.ts';
 
 export const app = express();
-app.set('query parser', 'extended');
 
+// extended qp for expressions in search query like [gte]
+// todo: specify for certain routes
+app.set('query parser', 'extended');
+app.use(urlencoded({ extended: true }));
+
+// set security http headers
+app.use(helmet());
+
+// query logs
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// rate limit
 const limiter = rateLimit({
   limit: 100,
   windowMs: 60 * 60 * 1000,
@@ -22,6 +32,9 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// make request.query writable
+// warn: kinda workaround, should to look up on this
+// should try Object.assign
 app.use((request, result, next) => {
   Object.defineProperty(request, 'query', {
     ...Object.getOwnPropertyDescriptor(request, 'query'),
@@ -31,12 +44,15 @@ app.use((request, result, next) => {
   next();
 });
 
-app.use(express.json());
+// body parser with json in request.body
+app.use(express.json({ limit: '10kb' }));
+
+// serving static files
 app.use(express.static(`${__dirname}/public`));
 
+// routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-
 app.use((request, response, next) => {
   next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });

@@ -4,15 +4,6 @@ import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 
-// const filterObjectByKeys = <T extends object, K extends keyof T>(
-//   object: T,
-//   ...keys: K[]
-// ) =>
-//   keys.reduce(
-//     (filtered, key) => ({ ...filtered, [key]: object[key] }),
-//     {} as Pick<T, K>,
-//   );
-
 function filterObjectByKeys<T, K extends keyof T>(object: T, ...keys: K[]) {
   const filtered = {} as Pick<T, K>;
   for (const key of keys) filtered[key] = object[key];
