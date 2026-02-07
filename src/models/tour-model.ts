@@ -1,24 +1,10 @@
-import { type InferSchemaType, model, Query, Schema } from 'mongoose';
+import {
+  type InferHydratedDocTypeFromSchema,
+  model,
+  Query,
+  Schema,
+} from 'mongoose';
 import slugify from 'slugify';
-
-// export interface ITour {
-//   name: string;
-//   slug: string;
-//   duration: number;
-//   maxGroupSize: number;
-//   difficulty: string;
-//   ratingsAverage: number;
-//   ratingsQuantity: number;
-//   price: number;
-//   priceDiscount: number;
-//   summary: string;
-//   description: string;
-//   imageCover: string;
-//   images: string[];
-//   createdAt: Date;
-//   startDates: Date[];
-//   secretTour: boolean;
-// }
 
 const tourSchema = new Schema(
   {
@@ -91,20 +77,23 @@ const tourSchema = new Schema(
     ],
   },
   {
+    virtuals: {
+      durationWeeks: {
+        get() {
+          return this.duration / 7;
+        },
+      },
+    },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
 );
 
-tourSchema.virtual('durationWeeks').get(function () {
-  return this.duration / 7;
-});
-
 tourSchema.pre('save', function () {
   this.slug = slugify.default(this.name, { lower: true });
 });
 
-tourSchema.pre(/^find/, function (this: Query<Tour, Tour>) {
+tourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
 });
 
@@ -112,6 +101,5 @@ tourSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 });
 
-type Tour = InferSchemaType<typeof tourSchema>;
-
-export const Tour = model<Tour>('Tour', tourSchema);
+export type TourDocument = InferHydratedDocTypeFromSchema<typeof tourSchema>;
+export const Tour = model('Tour', tourSchema);

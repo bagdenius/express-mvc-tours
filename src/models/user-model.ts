@@ -94,10 +94,9 @@ userSchema.pre('save', function () {
   this.passwordChangedAt = new Date(Date.now() - 1000);
 });
 
-userSchema.pre<Query<TUserDocument[], TUserDocument>>(/^find/, function () {
+userSchema.pre<Query<UserDocument[], UserDocument>>(/^find/, function () {
   this.find({ isActive: { $ne: false } });
 });
 
-export type TUserDocument = HydratedDocumentFromSchema<typeof userSchema>;
-
+export type UserDocument = HydratedDocumentFromSchema<typeof userSchema>;
 export const User = model('User', userSchema);

@@ -4,7 +4,7 @@ import type { CookieOptions, NextFunction, Request, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Types } from 'mongoose';
 
-import { type TUserDocument, User } from '../models/user-model.ts';
+import { User, type UserDocument } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { sendEmail } from '../utils/email.ts';
@@ -23,7 +23,7 @@ const verifyToken = (token: string, secret: string): Promise<JwtPayload> =>
   });
 
 const createSendToken = (
-  user: TUserDocument,
+  user: UserDocument,
   statusCode: number,
   response: Response,
 ) => {
