@@ -1,10 +1,10 @@
-import '../../load-env.js';
+import '../../load-env.ts';
 
 import fs from 'node:fs';
 
 import mongoose from 'mongoose';
 
-import { Tour } from '../../models/tour-model.js';
+import { Tour } from '../../models/tour-model.ts';
 import { __dirname } from '../../utils/path.ts';
 
 const DB = process.env.DATABASE!.replace(
@@ -15,7 +15,7 @@ const DB = process.env.DATABASE!.replace(
 await mongoose.connect(DB);
 
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf8'),
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours.json`, 'utf8'),
 );
 
 async function importData() {

@@ -1,26 +1,26 @@
-import { model, Query, Schema } from 'mongoose';
+import { type InferSchemaType, model, Query, Schema } from 'mongoose';
 import slugify from 'slugify';
 
-export interface ITour {
-  name: string;
-  slug: string;
-  duration: number;
-  maxGroupSize: number;
-  difficulty: string;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  price: number;
-  priceDiscount: number;
-  summary: string;
-  description: string;
-  imageCover: string;
-  images: string[];
-  createdAt: Date;
-  startDates: Date[];
-  secretTour: boolean;
-}
+// export interface ITour {
+//   name: string;
+//   slug: string;
+//   duration: number;
+//   maxGroupSize: number;
+//   difficulty: string;
+//   ratingsAverage: number;
+//   ratingsQuantity: number;
+//   price: number;
+//   priceDiscount: number;
+//   summary: string;
+//   description: string;
+//   imageCover: string;
+//   images: string[];
+//   createdAt: Date;
+//   startDates: Date[];
+//   secretTour: boolean;
+// }
 
-const tourSchema = new Schema<ITour>(
+const tourSchema = new Schema(
   {
     name: {
       type: String,
@@ -57,7 +57,7 @@ const tourSchema = new Schema<ITour>(
       type: Number,
       validate: {
         validator: function (discount: number) {
-          return discount < (this as ITour).price;
+          return discount < this.price;
         },
         message:
           'Tour price discount ({VALUE}) should be less than regular price',
@@ -74,6 +74,21 @@ const tourSchema = new Schema<ITour>(
     createdAt: { type: Date, default: Date.now() },
     startDates: { type: [Date] },
     secretTour: { type: Boolean, default: false },
+    startLocation: {
+      type: { type: String, default: 'Point', enum: ['Point'] },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: { type: String, default: 'Point', enum: ['Point'] },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -89,7 +104,7 @@ tourSchema.pre('save', function () {
   this.slug = slugify.default(this.name, { lower: true });
 });
 
-tourSchema.pre<Query<ITour, ITour>>(/^find/, function () {
+tourSchema.pre(/^find/, function (this: Query<Tour, Tour>) {
   this.find({ secretTour: { $ne: true } });
 });
 
@@ -97,4 +112,6 @@ tourSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 });
 
-export const Tour = model<ITour>('Tour', tourSchema);
+type Tour = InferSchemaType<typeof tourSchema>;
+
+export const Tour = model<Tour>('Tour', tourSchema);

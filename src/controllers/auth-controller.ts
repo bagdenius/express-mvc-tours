@@ -4,7 +4,7 @@ import type { CookieOptions, NextFunction, Request, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Types } from 'mongoose';
 
-import { type IUser, User } from '../models/user-model.ts';
+import { type TUserDocument, User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { sendEmail } from '../utils/email.ts';
@@ -23,7 +23,7 @@ const verifyToken = (token: string, secret: string): Promise<JwtPayload> =>
   });
 
 const createSendToken = (
-  user: IUser,
+  user: TUserDocument,
   statusCode: number,
   response: Response,
 ) => {
@@ -60,7 +60,7 @@ export const login = catchAsync(
     if (!email || !password)
       return next(new AppError('Please enter email and password', 400));
     const user = await User.findOne({ email }).select('+password');
-    if (!user || !(await user.isCorrectPassword(password, user.password)))
+    if (!user || !(await User.isCorrectPassword(password, user.password)))
       return next(new AppError('Invalid email or password', 401));
     createSendToken(user, 200, response);
   },
@@ -169,7 +169,7 @@ export const changePassword = catchAsync(
     const user = await User.findById(request.user!.id).select('+password');
     if (
       !user ||
-      !(await user.isCorrectPassword(
+      !(await User.isCorrectPassword(
         request.body.currentPassword,
         user.password,
       ))

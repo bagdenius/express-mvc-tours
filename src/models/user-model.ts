@@ -1,30 +1,15 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import { compare, hash } from 'bcrypt';
-import { model, Query, Schema, Types } from 'mongoose';
+import {
+  type HydratedDocumentFromSchema,
+  model,
+  Query,
+  Schema,
+} from 'mongoose';
 import validator from 'validator';
 
-export interface IUser {
-  _id: Types.ObjectId;
-  id: string;
-  __v: number;
-  name: string;
-  email: string;
-  photo: string;
-  role: 'user' | 'guide' | 'lead-guide' | 'admin';
-  isActive: boolean;
-  password: string;
-  confirmPassword?: string;
-  passwordChangedAt?: Date;
-  passwordResetToken?: string;
-  passwordResetExpires?: Date;
-
-  isCorrectPassword(password: string, encrypted: string): Promise<boolean>;
-  isPasswordChangedAfter(jwtTimestamp: number): boolean;
-  createPasswordResetToken(): string;
-}
-
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -63,7 +48,7 @@ const userSchema = new Schema<IUser>(
       required: [true, 'Please confirm your password'],
       validate: {
         validator: function (confirm: string) {
-          return (this as IUser).password === confirm;
+          return this.password === confirm;
         },
         message: 'Passwords should match',
       },
@@ -74,17 +59,13 @@ const userSchema = new Schema<IUser>(
   },
   {
     methods: {
-      isCorrectPassword: async (password: string, encrypted: string) =>
-        await compare(password, encrypted),
-
-      isPasswordChangedAfter: function (jwtTimestamp: number) {
+      isPasswordChangedAfter(jwtTimestamp: number) {
         if (this.passwordChangedAt) {
           const changedTimestamp = this.passwordChangedAt.getTime() / 1000;
           return jwtTimestamp < changedTimestamp;
         }
         return false;
       },
-
       createPasswordResetToken: function () {
         const resetToken = randomBytes(32).toString('hex');
         this.passwordResetToken = createHash('sha256')
@@ -94,13 +75,18 @@ const userSchema = new Schema<IUser>(
         return resetToken;
       },
     },
+    statics: {
+      async isCorrectPassword(password: string, encrypted: string) {
+        return await compare(password, encrypted);
+      },
+    },
   },
 );
 
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await hash(this.password, 12);
-  this.confirmPassword = undefined;
+  this.confirmPassword = undefined!;
 });
 
 userSchema.pre('save', function () {
@@ -108,8 +94,10 @@ userSchema.pre('save', function () {
   this.passwordChangedAt = new Date(Date.now() - 1000);
 });
 
-userSchema.pre(/^find/, function (this: Query<IUser, IUser>) {
+userSchema.pre<Query<TUserDocument[], TUserDocument>>(/^find/, function () {
   this.find({ isActive: { $ne: false } });
 });
 
-export const User = model<IUser>('User', userSchema);
+export type TUserDocument = HydratedDocumentFromSchema<typeof userSchema>;
+
+export const User = model('User', userSchema);
