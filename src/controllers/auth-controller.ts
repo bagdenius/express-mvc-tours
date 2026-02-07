@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Types } from 'mongoose';
 
-import { User } from '../models/user-model.ts';
+import { type IUser, User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { sendEmail } from '../utils/email.ts';
@@ -22,6 +22,17 @@ const verifyToken = (token: string, secret: string): Promise<JwtPayload> =>
     });
   });
 
+const createSendToken = (
+  user: IUser,
+  statusCode: number,
+  response: Response,
+) => {
+  const token = signToken(user._id);
+  response
+    .status(statusCode)
+    .json({ status: 'success', token, data: { user } });
+};
+
 export const signUp = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
     const user = await User.create({
@@ -30,8 +41,7 @@ export const signUp = catchAsync(
       password: request.body.password,
       confirmPassword: request.body.confirmPassword,
     });
-    const token = signToken(user._id);
-    response.status(201).json({ status: 'success', token, data: { user } });
+    createSendToken(user, 201, response);
   },
 );
 
@@ -43,8 +53,7 @@ export const login = catchAsync(
     const user = await User.findOne({ email }).select('+password');
     if (!user || !(await user.isCorrectPassword(password, user.password)))
       return next(new AppError('Invalid email or password', 401));
-    const token = signToken(user._id);
-    response.status(200).json({ status: 'success', token });
+    createSendToken(user, 200, response);
   },
 );
 
@@ -142,7 +151,24 @@ export const resetPassword = catchAsync(
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
-    const token = signToken(user._id);
-    response.status(200).json({ status: 'success', token });
+    createSendToken(user, 200, response);
+  },
+);
+
+export const changePassword = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const user = await User.findById(request.user.id).select('+password');
+    if (
+      !user ||
+      !(await user.isCorrectPassword(
+        request.body.currentPassword,
+        user.password,
+      ))
+    )
+      return next(new AppError('Wrong current password', 401));
+    user.password = request.body.password;
+    user.confirmPassword = request.body.confirmPassword;
+    await user.save();
+    createSendToken(user, 200, response);
   },
 );

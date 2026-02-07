@@ -1,10 +1,13 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import { compare, hash } from 'bcrypt';
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 import validator from 'validator';
 
 export interface IUser {
+  _id: Types.ObjectId;
+  id: string;
+  __v: number;
   name: string;
   email: string;
   photo: string;

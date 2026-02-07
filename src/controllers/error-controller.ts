@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from 'express';
 import { Error } from 'mongoose';
 
 import { AppError } from '../utils/app-error.ts';
-import type { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 function handleCastErrorDB(error: Error.CastError) {
   const message = `Invalid ${error.path}: ${error.value}`;
