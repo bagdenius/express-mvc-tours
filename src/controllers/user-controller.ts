@@ -71,3 +71,10 @@ export const updateInfo = catchAsync(
     response.status(200).json({ status: 'success', data: { user } });
   },
 );
+
+export const deleteProfile = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    await User.findByIdAndUpdate(request.user.id, { isActive: false });
+    response.status(204).json({ status: 'success', data: null });
+  },
+);

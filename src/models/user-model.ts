@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import { compare, hash } from 'bcrypt';
-import { model, Schema, Types } from 'mongoose';
+import { model, Query, Schema, Types } from 'mongoose';
 import validator from 'validator';
 
 export interface IUser {
@@ -12,6 +12,7 @@ export interface IUser {
   email: string;
   photo: string;
   role: 'user' | 'guide' | 'lead-guide' | 'admin';
+  isActive: boolean;
   password: string;
   confirmPassword?: string;
   passwordChangedAt?: Date;
@@ -45,6 +46,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ['user', 'guide', 'lead-guide', 'admin'],
       default: 'user',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
     password: {
       type: String,
@@ -100,6 +106,10 @@ userSchema.pre('save', async function () {
 userSchema.pre('save', function () {
   if (!this.isModified('password') || this.isNew) return;
   this.passwordChangedAt = new Date(Date.now() - 1000);
+});
+
+userSchema.pre(/^find/, function (this: Query<IUser, IUser>) {
+  this.find({ isActive: { $ne: false } });
 });
 
 export const User = model<IUser>('User', userSchema);
