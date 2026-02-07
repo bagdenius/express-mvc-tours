@@ -1,4 +1,5 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import morgan from 'morgan';
 
 import { globalErrorHandler } from './controllers/error-controller.ts';
@@ -8,12 +9,18 @@ import { AppError } from './utils/app-error.ts';
 import { __dirname } from './utils/path.ts';
 
 export const app = express();
+app.set('query parser', 'extended');
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.set('query parser', 'extended');
+const limiter = rateLimit({
+  limit: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP. Please try again in an hour',
+});
+app.use('/api', limiter);
 
 app.use((request, result, next) => {
   Object.defineProperty(request, 'query', {
