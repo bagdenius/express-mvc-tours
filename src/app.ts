@@ -3,6 +3,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import { rateLimit } from 'express-rate-limit';
 import { xss } from 'express-xss-sanitizer';
 import helmet from 'helmet';
+import hpp from 'hpp';
 import morgan from 'morgan';
 
 import { globalErrorHandler } from './controllers/error-controller.ts';
@@ -54,6 +55,20 @@ app.use(mongoSanitize());
 
 // data sanitization (XSS)
 app.use(xss());
+
+// prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsAverage',
+      'ratingsQuantity',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // serving static files
 app.use(express.static(`${__dirname}/public`));
