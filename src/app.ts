@@ -1,5 +1,7 @@
 import express, { urlencoded } from 'express';
+import mongoSanitize from 'express-mongo-sanitize';
 import { rateLimit } from 'express-rate-limit';
+import { xss } from 'express-xss-sanitizer';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -46,6 +48,12 @@ app.use((request, result, next) => {
 
 // body parser with json in request.body
 app.use(express.json({ limit: '10kb' }));
+
+// data sanitization (noSQL query injection)
+app.use(mongoSanitize());
+
+// data sanitization (XSS)
+app.use(xss());
 
 // serving static files
 app.use(express.static(`${__dirname}/public`));
