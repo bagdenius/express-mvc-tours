@@ -28,7 +28,7 @@ const createSendToken = (
   response: Response,
 ) => {
   const token = signToken(user._id);
-  user.password = undefined;
+  user.password = undefined!;
   const cookieOptions: CookieOptions = {
     expires: new Date(
       Date.now() + +process.env.JWT_EXPIRES_IN_COOKIE * 24 * 60 * 60 * 1000,
@@ -166,7 +166,7 @@ export const resetPassword = catchAsync(
 
 export const changePassword = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
-    const user = await User.findById(request.user.id).select('+password');
+    const user = await User.findById(request.user!.id).select('+password');
     if (
       !user ||
       !(await user.isCorrectPassword(

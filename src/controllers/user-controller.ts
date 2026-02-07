@@ -55,7 +55,7 @@ export const updateInfo = catchAsync(
         ),
       );
     const filteredBody = filterObjectByKeys(request.body, 'name', 'email');
-    const user = await User.findByIdAndUpdate(request.user.id, filteredBody, {
+    const user = await User.findByIdAndUpdate(request.user!.id, filteredBody, {
       new: true,
       runValidators: true,
     });
@@ -65,7 +65,7 @@ export const updateInfo = catchAsync(
 
 export const deleteProfile = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
-    await User.findByIdAndUpdate(request.user.id, { isActive: false });
+    await User.findByIdAndUpdate(request.user!.id, { isActive: false });
     response.status(204).json({ status: 'success', data: null });
   },
 );
