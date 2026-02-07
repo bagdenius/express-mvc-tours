@@ -10,6 +10,7 @@ declare global {
 
       JWT_SECRET: string;
       JWT_EXPIRES_IN: string;
+      JWT_EXPIRES_IN_COOKIE: string;
 
       EMAIL_USERNAME: string;
       EMAIL_PASSWORD: string;
