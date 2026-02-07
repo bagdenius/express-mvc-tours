@@ -13,6 +13,7 @@ import {
   deleteUser,
   getUser,
   getUsers,
+  updateInfo,
   updateUser,
 } from '../controllers/user-controller.ts';
 
@@ -25,6 +26,7 @@ router.post('/forgot-password', forgotPassword);
 router.patch('/reset-password/:token', resetPassword);
 
 router.patch('/change-password', protect, changePassword);
+router.patch('/update-info', protect, updateInfo);
 
 router.route('/').get(getUsers).post(createUser);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
