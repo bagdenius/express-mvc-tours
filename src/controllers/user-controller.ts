@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
-import { deleteOne } from './handler-factory.ts';
+import { deleteOne, updateOne } from './handler-factory.ts';
 
 function filterObjectByKeys<T, K extends keyof T>(object: T, ...keys: K[]) {
   const filtered = {} as Pick<T, K>;
@@ -34,12 +34,7 @@ export function createUser(request: Request, response: Response) {
     .json({ status: 'error', message: 'Route is not defined!' });
 }
 
-export function updateUser(request: Request, response: Response) {
-  response
-    .status(500)
-    .json({ status: 'error', message: 'Route is not defined!' });
-}
-
+export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
 
 export const updateInfo = catchAsync(

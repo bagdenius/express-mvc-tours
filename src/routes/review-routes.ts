@@ -5,6 +5,7 @@ import {
   createReview,
   deleteReview,
   getReviews,
+  updateReview,
 } from '../controllers/review-contoller.ts';
 
 export const router = Router({ mergeParams: true });
@@ -14,4 +15,4 @@ router
   .get(getReviews)
   .post(protect, restrictTo('user'), createReview);
 
-router.route('/:id').delete(deleteReview);
+router.route('/:id').patch(updateReview).delete(deleteReview);

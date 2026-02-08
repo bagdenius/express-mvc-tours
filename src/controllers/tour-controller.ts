@@ -4,7 +4,7 @@ import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { QueryBuilder } from '../utils/query-builder.ts';
-import { deleteOne } from './handler-factory.ts';
+import { deleteOne, updateOne } from './handler-factory.ts';
 
 export function aliasTopTours(
   request: Request,
@@ -52,17 +52,7 @@ export const createTour = catchAsync(
   },
 );
 
-export const updateTour = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!tour) return next(new AppError('Tour not found', 404));
-    response.status(200).json({ status: 'success', data: { tour } });
-  },
-);
-
+export const updateTour = updateOne(Tour);
 export const deleteTour = deleteOne(Tour);
 
 export const getTourStats = catchAsync(
