@@ -90,6 +90,12 @@ const tourSchema = new Schema(
   },
 );
 
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 tourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
   this.populate({
     path: 'guides',

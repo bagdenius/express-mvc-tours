@@ -39,7 +39,7 @@ const reviewSchema = new Schema(
 );
 
 reviewSchema.pre<Query<ReviewDocument[], ReviewDocument>>(/^find/, function () {
-  this.populate({ path: 'tour', select: 'name' }).populate({
+  this.populate({
     path: 'author',
     select: 'name photo',
   });
