@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 
 import { Review } from '../models/review-model.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
+import { deleteOne } from './handler-factory.ts';
 
 export const getReviews = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
@@ -27,3 +28,5 @@ export const createReview = catchAsync(
     response.status(201).json({ status: 'success', data: { review } });
   },
 );
+
+export const deleteReview = deleteOne(Review);

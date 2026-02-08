@@ -4,6 +4,7 @@ import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { QueryBuilder } from '../utils/query-builder.ts';
+import { deleteOne } from './handler-factory.ts';
 
 export function aliasTopTours(
   request: Request,
@@ -62,13 +63,7 @@ export const updateTour = catchAsync(
   },
 );
 
-export const deleteTour = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const tour = await Tour.findByIdAndDelete(request.params.id);
-    if (!tour) return next(new AppError('Tour not found', 404));
-    response.status(204).send();
-  },
-);
+export const deleteTour = deleteOne(Tour);
 
 export const getTourStats = catchAsync(
   async (reques: Request, response: Response, next: NextFunction) => {
