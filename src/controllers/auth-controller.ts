@@ -101,7 +101,7 @@ export const protect = catchAsync(
 );
 
 export const restrictTo =
-  (...roles: string[]) =>
+  (...roles: ('user' | 'guide' | 'lead-guide' | 'admin')[]) =>
   (request: Request, response: Response, next: NextFunction) => {
     if (!request.user || !roles.includes(request.user.role))
       return next(

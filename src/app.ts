@@ -7,6 +7,7 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 
 import { globalErrorHandler } from './controllers/error-controller.ts';
+import { router as reviewRouter } from './routes/review-routes.ts';
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
 import { AppError } from './utils/app-error.ts';
@@ -76,6 +77,7 @@ app.use(express.static(`${__dirname}/public`));
 // routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 app.use((request, response, next) => {
   next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });

@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 
 import { protect, restrictTo } from '../controllers/auth-controller.ts';
 import {
@@ -12,7 +12,7 @@ import {
   updateTour,
 } from '../controllers/tour-controller.ts';
 
-export const router = express.Router();
+export const router = Router();
 
 router.route('/top-5').get(aliasTopTours, getTours);
 router.route('/stats').get(getTourStats);

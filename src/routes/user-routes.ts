@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 
 import {
   changePassword,
@@ -18,7 +18,7 @@ import {
   updateUser,
 } from '../controllers/user-controller.ts';
 
-export const router = express.Router();
+export const router = Router();
 
 router.post('/signup', signUp);
 router.post('/login', login);
