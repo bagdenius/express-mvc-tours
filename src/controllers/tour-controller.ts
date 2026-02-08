@@ -4,7 +4,7 @@ import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { QueryBuilder } from '../utils/query-builder.ts';
-import { deleteOne, updateOne } from './handler-factory.ts';
+import { createOne, deleteOne, updateOne } from './handler-factory.ts';
 
 export function aliasTopTours(
   request: Request,
@@ -45,13 +45,7 @@ export const getTour = catchAsync(
   },
 );
 
-export const createTour = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const tour = await Tour.create(request.body);
-    response.status(201).json({ status: 'success', data: { tour } });
-  },
-);
-
+export const createTour = createOne(Tour);
 export const updateTour = updateOne(Tour);
 export const deleteTour = deleteOne(Tour);
 

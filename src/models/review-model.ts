@@ -26,7 +26,7 @@ const reviewSchema = new Schema(
       ref: 'Tour',
       required: [true, 'Please select a tour'],
     },
-    author: {
+    user: {
       type: Schema.ObjectId,
       ref: 'User',
       required: [true, 'Please log in'],
@@ -40,7 +40,7 @@ const reviewSchema = new Schema(
 
 reviewSchema.pre<Query<ReviewDocument[], ReviewDocument>>(/^find/, function () {
   this.populate({
-    path: 'author',
+    path: 'user',
     select: 'name photo',
   });
 });
