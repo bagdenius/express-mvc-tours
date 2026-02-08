@@ -1,4 +1,9 @@
-import { type InferHydratedDocTypeFromSchema, model, Schema } from 'mongoose';
+import {
+  type InferHydratedDocTypeFromSchema,
+  model,
+  Query,
+  Schema,
+} from 'mongoose';
 
 const reviewSchema = new Schema(
   {
@@ -32,6 +37,13 @@ const reviewSchema = new Schema(
     toObject: { virtuals: true },
   },
 );
+
+reviewSchema.pre<Query<ReviewDocument[], ReviewDocument>>(/^find/, function () {
+  this.populate({ path: 'tour', select: 'name' }).populate({
+    path: 'author',
+    select: 'name photo',
+  });
+});
 
 export type ReviewDocument = InferHydratedDocTypeFromSchema<
   typeof reviewSchema
