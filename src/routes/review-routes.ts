@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { protect, restrictTo } from '../controllers/auth-controller.ts';
 import { createReview, getReviews } from '../controllers/review-contoller.ts';
 
-export const router = Router();
+export const router = Router({ mergeParams: true });
 
 router
   .route('/')
