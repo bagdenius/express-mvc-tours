@@ -75,6 +75,7 @@ const tourSchema = new Schema(
         day: Number,
       },
     ],
+    guides: { type: [{ type: Schema.ObjectId, ref: 'User' }] },
   },
   {
     virtuals: {
@@ -88,6 +89,13 @@ const tourSchema = new Schema(
     toObject: { virtuals: true },
   },
 );
+
+tourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
+  this.populate({
+    path: 'guides',
+    select: 'name email role',
+  });
+});
 
 tourSchema.pre('save', function () {
   this.slug = slugify.default(this.name, { lower: true });

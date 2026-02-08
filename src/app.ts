@@ -54,7 +54,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(mongoSanitize());
 
 // data sanitization (XSS)
-app.use(xss());
+// app.use(xss());
 
 // prevent parameter pollution
 app.use(
