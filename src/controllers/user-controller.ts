@@ -3,7 +3,13 @@ import type { NextFunction, Request, Response } from 'express';
 import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
-import { createOne, deleteOne, updateOne } from './handler-factory.ts';
+import {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} from './handler-factory.ts';
 
 function filterObjectByKeys<T, K extends keyof T>(object: T, ...keys: K[]) {
   const filtered = {} as Pick<T, K>;
@@ -11,23 +17,8 @@ function filterObjectByKeys<T, K extends keyof T>(object: T, ...keys: K[]) {
   return filtered;
 }
 
-export const getUsers = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const users = await User.find();
-    response
-      .status(200)
-      .json({ status: 'success', results: users.length, data: { users } });
-  },
-);
-
-export const getUser = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const user = await User.findById(request.params.id);
-    if (!user) return next(new AppError('User not found', 404));
-    response.status(200).json({ status: 'success', data: { user } });
-  },
-);
-
+export const getUsers = getAll(User);
+export const getUser = getOne(User);
 export const createUser = createOne(User);
 export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);

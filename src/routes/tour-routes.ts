@@ -15,7 +15,7 @@ import { router as reviewRouter } from './review-routes.ts';
 
 export const router = Router();
 
-router.use('/:id/reviews', reviewRouter);
+router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5').get(aliasTopTours, getTours);
 router.route('/stats').get(getTourStats);

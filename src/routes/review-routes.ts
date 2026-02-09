@@ -4,6 +4,7 @@ import { protect, restrictTo } from '../controllers/auth-controller.ts';
 import {
   createReview,
   deleteReview,
+  getReview,
   getReviews,
   setTourUserIds,
   updateReview,
@@ -16,4 +17,4 @@ router
   .get(getReviews)
   .post(protect, restrictTo('user'), setTourUserIds, createReview);
 
-router.route('/:id').patch(updateReview).delete(deleteReview);
+router.route('/:id').get(getReview).patch(updateReview).delete(deleteReview);

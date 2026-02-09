@@ -1,10 +1,14 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { Tour } from '../models/tour-model.ts';
-import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
-import { QueryBuilder } from '../utils/query-builder.ts';
-import { createOne, deleteOne, updateOne } from './handler-factory.ts';
+import {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} from './handler-factory.ts';
 
 export function aliasTopTours(
   request: Request,
@@ -20,31 +24,11 @@ export function aliasTopTours(
   next();
 }
 
-export const getTours = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const queryBuilder = new QueryBuilder(Tour.find(), request.query)
-      .filter()
-      .sort()
-      .selectFields()
-      .paginate();
-    const tours = await queryBuilder.query;
-    response
-      .status(200)
-      .json({ status: 'success', results: tours.length, data: { tours } });
-  },
-);
-
-export const getTour = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    const tour = await Tour.findById(request.params.id).populate({
-      path: 'reviews',
-      select: 'text',
-    });
-    if (!tour) return next(new AppError('Tour not found', 404));
-    response.status(200).json({ status: 'success', data: { tour } });
-  },
-);
-
+export const getTours = getAll(Tour);
+export const getTour = getOne(Tour, {
+  path: 'reviews',
+  select: 'text rating createdAt user',
+});
 export const createTour = createOne(Tour);
 export const updateTour = updateOne(Tour);
 export const deleteTour = deleteOne(Tour);
