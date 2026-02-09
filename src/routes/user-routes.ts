@@ -6,6 +6,7 @@ import {
   login,
   protect,
   resetPassword,
+  restrictTo,
   signUp,
 } from '../controllers/auth-controller.ts';
 import {
@@ -26,11 +27,15 @@ router.post('/login', login);
 
 router.post('/forgot-password', forgotPassword);
 router.patch('/reset-password/:token', resetPassword);
-router.patch('/change-password', protect, changePassword);
 
-router.get('/profile', protect, setCurrentUser, getUser);
-router.patch('/update-profile', protect, updateProfile);
-router.delete('/delete-profile', protect, deleteProfile);
+// protected
+router.use(protect);
+router.get('/profile', setCurrentUser, getUser);
+router.patch('/change-password', changePassword);
+router.patch('/update-profile', updateProfile);
+router.delete('/delete-profile', deleteProfile);
 
+// restricted
+router.use(restrictTo('admin'));
 router.route('/').get(getUsers).post(createUser);
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
