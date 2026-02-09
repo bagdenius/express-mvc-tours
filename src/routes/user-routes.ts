@@ -14,7 +14,8 @@ import {
   deleteUser,
   getUser,
   getUsers,
-  updateInfo,
+  setCurrentUser,
+  updateProfile,
   updateUser,
 } from '../controllers/user-controller.ts';
 
@@ -25,9 +26,10 @@ router.post('/login', login);
 
 router.post('/forgot-password', forgotPassword);
 router.patch('/reset-password/:token', resetPassword);
-
 router.patch('/change-password', protect, changePassword);
-router.patch('/update-info', protect, updateInfo);
+
+router.get('/profile', protect, setCurrentUser, getUser);
+router.patch('/update-profile', protect, updateProfile);
 router.delete('/delete-profile', protect, deleteProfile);
 
 router.route('/').get(getUsers).post(createUser);

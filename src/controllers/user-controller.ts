@@ -23,7 +23,16 @@ export const createUser = createOne(User);
 export const updateUser = updateOne(User);
 export const deleteUser = deleteOne(User);
 
-export const updateInfo = catchAsync(
+export const setCurrentUser = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  request.params.id = request.user.id;
+  next();
+};
+
+export const updateProfile = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
     if (request.body.password || request.body.confirmPassword)
       return next(
