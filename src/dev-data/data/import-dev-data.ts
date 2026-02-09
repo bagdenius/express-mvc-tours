@@ -4,7 +4,9 @@ import fs from 'node:fs';
 
 import mongoose from 'mongoose';
 
+import { Review } from '../../models/review-model.ts';
 import { Tour } from '../../models/tour-model.ts';
+import { User } from '../../models/user-model.ts';
 import { __dirname } from '../../utils/path.ts';
 
 const DB = process.env.DATABASE!.replace(
@@ -17,10 +19,18 @@ await mongoose.connect(DB);
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours.json`, 'utf8'),
 );
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`, 'utf8'),
+);
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/../dev-data/data/reviews.json`, 'utf8'),
+);
 
 async function importData() {
   try {
     await Tour.create(tours);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
     console.log('Data succesfully loaded!');
   } catch (error) {
     console.error(error);
@@ -30,6 +40,8 @@ async function importData() {
 async function deleteData() {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
     console.log('Data successfully deleted!');
   } catch (error) {
     console.error(error);
