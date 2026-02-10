@@ -11,7 +11,6 @@ export const getAll = <T>(Model: Model<T>) =>
       // workaround to allow nested get reviews on tour. FIX IT!
       let filter = {};
       if (request.params.tourId) filter = { tour: request.params.tourId };
-      console.log(filter);
 
       const queryBuilder = new QueryBuilder(Model.find(filter), request.query)
         .filter()
