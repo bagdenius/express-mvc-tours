@@ -65,6 +65,8 @@ const reviewSchema = new Schema(
   },
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre<ReviewQuery>(/^find/, function () {
   this.populate({
     path: 'user',
