@@ -38,7 +38,7 @@ const reviewSchema = new Schema(
   },
 );
 
-reviewSchema.pre<Query<ReviewDocument[], ReviewDocument>>(/^find/, function () {
+reviewSchema.pre<ReviewQuery>(/^find/, function () {
   this.populate({
     path: 'user',
     select: 'name photo',
@@ -47,5 +47,9 @@ reviewSchema.pre<Query<ReviewDocument[], ReviewDocument>>(/^find/, function () {
 
 export type ReviewDocument = InferHydratedDocTypeFromSchema<
   typeof reviewSchema
+>;
+export type ReviewQuery = Query<
+  ReviewDocument[] | ReviewDocument | null,
+  ReviewDocument
 >;
 export const Review = model('Review', reviewSchema);

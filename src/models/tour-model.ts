@@ -90,13 +90,16 @@ const tourSchema = new Schema(
   },
 );
 
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
   localField: '_id',
 });
 
-tourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
+tourSchema.pre<TourQuery>(/^find/, function () {
   this.populate({
     path: 'guides',
     select: 'name email role',
@@ -107,7 +110,7 @@ tourSchema.pre('save', function () {
   this.slug = slugify.default(this.name, { lower: true });
 });
 
-tourSchema.pre<Query<TourDocument[], TourDocument>>(/^find/, function () {
+tourSchema.pre<TourQuery>(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
 });
 
@@ -116,4 +119,8 @@ tourSchema.pre('aggregate', function () {
 });
 
 export type TourDocument = InferHydratedDocTypeFromSchema<typeof tourSchema>;
+export type TourQuery = Query<
+  TourDocument[] | TourDocument | null,
+  TourDocument
+>;
 export const Tour = model('Tour', tourSchema);
