@@ -5,6 +5,7 @@ import {
   aliasTopTours,
   createTour,
   deleteTour,
+  getDistances,
   getMonthlyPlan,
   getTour,
   getTours,
@@ -25,6 +26,7 @@ router
   .get(protect, restrictTo('admin', 'guide', 'lead-guide'), getMonthlyPlan);
 
 router.route('/within/:distance/center/:latlng/unit/:unit').get(getToursWithin);
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 router
   .route('/')

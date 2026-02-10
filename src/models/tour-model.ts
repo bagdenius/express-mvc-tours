@@ -107,9 +107,9 @@ tourSchema.pre<TourQuery>(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
 });
 
-tourSchema.pre('aggregate', function () {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-});
+// tourSchema.pre('aggregate', function () {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+// });
 
 export type TourDocument = InferHydratedDocTypeFromSchema<typeof tourSchema>;
 export type TourQuery = Query<
