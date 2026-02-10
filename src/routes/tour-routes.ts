@@ -9,6 +9,7 @@ import {
   getTour,
   getTours,
   getTourStats,
+  getToursWithin,
   updateTour,
 } from '../controllers/tour-controller.ts';
 import { router as reviewRouter } from './review-routes.ts';
@@ -22,6 +23,8 @@ router.route('/stats').get(getTourStats);
 router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'guide', 'lead-guide'), getMonthlyPlan);
+
+router.route('/within/:distance/center/:latlng/unit/:unit').get(getToursWithin);
 
 router
   .route('/')

@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { Tour } from '../models/tour-model.ts';
+import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import {
   createOne,
@@ -83,5 +84,28 @@ export const getMonthlyPlan = catchAsync(
       { $sort: { month: 1 } },
     ]);
     response.status(200).json({ status: 'success', data: { plan } });
+  },
+);
+
+// 34.053541,-117.686418
+export const getToursWithin = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const { distance, latlng, unit } = request.params;
+    const [lat, lng] = (latlng as string).split(',');
+    const radius = unit === 'mi' ? +distance / 3963.2 : +distance / 6378.1;
+    if (!lat || !lng)
+      return next(
+        new AppError(
+          'Please provide latitude and longitude in the format lng,lng.',
+          400,
+        ),
+      );
+    console.log(distance, lat, lng, unit);
+    const tours = await Tour.find({
+      startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    });
+    response
+      .status(200)
+      .json({ status: 'success', results: tours.length, data: { tours } });
   },
 );
