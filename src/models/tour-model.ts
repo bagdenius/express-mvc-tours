@@ -39,7 +39,7 @@ const tourSchema = new Schema(
     },
     ratingCount: { type: Number, default: 0 },
     price: { type: Number, required: [true, 'Tour should have a price'] },
-    priceDiscount: {
+    discount: {
       type: Number,
       validate: {
         validator: function (discount: number) {
@@ -78,13 +78,6 @@ const tourSchema = new Schema(
     guides: { type: [{ type: Schema.ObjectId, ref: 'User' }] },
   },
   {
-    virtuals: {
-      durationWeeks: {
-        get() {
-          return this.duration / 7;
-        },
-      },
-    },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
