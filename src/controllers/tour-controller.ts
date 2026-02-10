@@ -18,8 +18,8 @@ export function aliasTopTours(
   request.query = {
     ...request.query,
     limit: '5',
-    sort: '-ratingsAverage,price',
-    fields: 'name,price,ratingsAverage,summary,difficulty',
+    sort: '-averageRating,price',
+    fields: 'name,price,averageRating,summary,difficulty',
   };
   next();
 }
@@ -36,13 +36,13 @@ export const deleteTour = deleteOne(Tour);
 export const getTourStats = catchAsync(
   async (reques: Request, response: Response, next: NextFunction) => {
     const stats = await Tour.aggregate([
-      { $match: { ratingsAverage: { $gte: 4.5 } } },
+      { $match: { averageRating: { $gte: 4.5 } } },
       {
         $group: {
           _id: { $toUpper: '$difficulty' },
           toursCount: { $sum: 1 },
-          ratingsCount: { $sum: '$ratingsQuantity' },
-          averageRating: { $avg: '$ratingsAverage' },
+          ratingsCount: { $sum: '$ratingCount' },
+          averageRating: { $avg: '$averageRating' },
           averagePrice: { $avg: '$price' },
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' },

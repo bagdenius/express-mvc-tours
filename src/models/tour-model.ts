@@ -31,13 +31,13 @@ const tourSchema = new Schema(
         message: 'Tour difficulty is either easy, medium or difficult',
       },
     },
-    ratingsAverage: {
+    averageRating: {
       type: Number,
       default: 0,
       min: [1, 'Tour rating must be above 1.0'],
       max: [5, 'Tour rating must be below 5.0'],
     },
-    ratingsQuantity: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 },
     price: { type: Number, required: [true, 'Tour should have a price'] },
     priceDiscount: {
       type: Number,
@@ -90,7 +90,7 @@ const tourSchema = new Schema(
   },
 );
 
-tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ price: 1, averageRating: -1 });
 tourSchema.index({ slug: 1 });
 
 tourSchema.virtual('reviews', {
