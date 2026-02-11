@@ -20,10 +20,14 @@ const DB = process.env.DATABASE!.replace(
 
 await mongoose.connect(DB);
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf8'));
-const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf8'));
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}src/dev-data/data/tours.json`, 'utf8'),
+);
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}src/dev-data/data/users.json`, 'utf8'),
+);
 const reviews = JSON.parse(
-  fs.readFileSync(`${__dirname}/reviews.json`, 'utf8'),
+  fs.readFileSync(`${__dirname}src/dev-data/data/reviews.json`, 'utf8'),
 );
 
 async function importData() {

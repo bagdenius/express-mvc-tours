@@ -1,5 +1,4 @@
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 import express, { urlencoded } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -8,20 +7,19 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 
+import { __dirname } from '../path.ts';
 import { globalErrorHandler } from './controllers/error-controller.ts';
 import { router as reviewRouter } from './routes/review-routes.ts';
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
+import { router as viewRouter } from './routes/view-routes.ts';
 import { AppError } from './utils/app-error.ts';
-
-export const __filename = fileURLToPath(import.meta.url);
-export const __dirname = dirname(__filename);
 
 export const app = express();
 
 // set up view engine and views directory
 app.set('view engine', 'pug');
-app.set('views', join(__dirname, 'views'));
+app.set('views', join(__dirname, 'src', 'views'));
 
 // serving static files
 app.use(express.static(join(__dirname, 'public')));
@@ -82,11 +80,8 @@ app.use(
   }),
 );
 
-app.get('/', (request, response, next) => {
-  response.status(200).render('base');
-});
-
-// api routes
+// routes
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
