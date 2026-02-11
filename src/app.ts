@@ -30,7 +30,7 @@ app.set('query parser', 'extended');
 app.use(urlencoded({ extended: true }));
 
 // set security http headers
-app.use(helmet());
+// app.use(helmet());
 
 // query logs
 if (process.env.NODE_ENV === 'development') {

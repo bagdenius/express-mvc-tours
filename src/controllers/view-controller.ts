@@ -14,5 +14,5 @@ export const getTour = catchAsync(async (request, response, next) => {
     select: 'user text rating',
   });
   if (!tour) return next(new AppError('Tour not found', 404));
-  response.status(200).render('tour', { title: tour.name, tour });
+  response.status(200).render('tour', { title: `${tour.name} Tour`, tour });
 });
