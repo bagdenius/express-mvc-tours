@@ -4,4 +4,5 @@ import { getOverview, getTour } from '../controllers/view-controller.ts';
 
 export const router = Router();
 
-router.get('/', getOverview).get('/tour', getTour);
+router.get('/', getOverview);
+router.get('/tour/:slug', getTour);

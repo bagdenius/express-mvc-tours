@@ -95,7 +95,7 @@ tourSchema.virtual('reviews', {
 tourSchema.pre<TourQuery>(/^find/, function () {
   this.populate({
     path: 'guides',
-    select: 'name email role',
+    select: 'name email role photo',
   });
 });
 
