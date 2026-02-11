@@ -1,13 +1,17 @@
 import '../../load-env.ts';
 
 import fs from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import mongoose from 'mongoose';
 
 import { Review } from '../../models/review-model.ts';
 import { Tour } from '../../models/tour-model.ts';
 import { User } from '../../models/user-model.ts';
-import { __dirname } from '../../utils/path.ts';
+
+export const __filename = fileURLToPath(import.meta.url);
+export const __dirname = dirname(__filename);
 
 const DB = process.env.DATABASE!.replace(
   '<PASSWORD>',
@@ -16,14 +20,10 @@ const DB = process.env.DATABASE!.replace(
 
 await mongoose.connect(DB);
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours.json`, 'utf8'),
-);
-const users = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`, 'utf8'),
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf8'));
 const reviews = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/reviews.json`, 'utf8'),
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf8'),
 );
 
 async function importData() {

@@ -1,7 +1,9 @@
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import express, { urlencoded } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
 import { rateLimit } from 'express-rate-limit';
-import { xss } from 'express-xss-sanitizer';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
@@ -11,9 +13,18 @@ import { router as reviewRouter } from './routes/review-routes.ts';
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
 import { AppError } from './utils/app-error.ts';
-import { __dirname } from './utils/path.ts';
+
+export const __filename = fileURLToPath(import.meta.url);
+export const __dirname = dirname(__filename);
 
 export const app = express();
+
+// set up view engine and views directory
+app.set('view engine', 'pug');
+app.set('views', join(__dirname, 'views'));
+
+// serving static files
+app.use(express.static(join(__dirname, 'public')));
 
 // extended qp for expressions in search query like [gte]
 // todo: specify for certain routes
@@ -71,10 +82,11 @@ app.use(
   }),
 );
 
-// serving static files
-app.use(express.static(`${__dirname}/public`));
+app.get('/', (request, response, next) => {
+  response.status(200).render('base');
+});
 
-// routes
+// api routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
