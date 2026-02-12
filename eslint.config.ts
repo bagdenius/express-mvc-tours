@@ -1,29 +1,22 @@
-import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
 import { defineConfig } from 'eslint/config';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
-// import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  // eslintPluginUnicorn.configs['recommended'],
+  tseslint.configs.recommended,
   {
-    files: ['**/*.{js,ts}'],
-    ignores: ['**/*.js', 'dist/**/*', 'node_modules/**/*'],
+    files: ['**/*.ts'],
+    ignores: ['dist/**/*', 'node_modules/**/*'],
     plugins: {
       'simple-import-sort': simpleImportSort,
+      prettier: eslintPluginPrettier,
     },
     rules: {
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-      // 'unicorn/better-regex': 'warn',
-      // 'unicorn/no-process-exit': 'off',
-      // 'unicorn/no-array-reduce': 'off',
-      // 'unicorn/prevent-abbreviations': 'off',
-      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -35,7 +28,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/**/*.test.{js,ts}'],
+    files: ['src/**/*.test.ts'],
     ...vitest.configs.recommended,
   },
   eslintPluginPrettierRecommended,

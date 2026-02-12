@@ -4,7 +4,7 @@ import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 
-export const getOverview = catchAsync(async (_, response) => {
+export const getOverview = catchAsync(async (request, response, next) => {
   const tours = await Tour.find();
   response.status(200).render('overview', { title: 'All tours', tours });
 });
@@ -19,6 +19,6 @@ export const getTour = catchAsync(async (request, response, next) => {
   response.status(200).render('tour', { title: `${tour.name} Tour`, tour });
 });
 
-export const getLoginForm = (_: Request, response: Response) => {
+export const getLoginForm = (request: Request, response: Response) => {
   response.status(200).render('login', { title: 'Log into your account' });
 };

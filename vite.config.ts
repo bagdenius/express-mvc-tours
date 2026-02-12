@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   root: 'public/ts',
   build: {
-    outDir: '../../public/dist',
+    outDir: '../dist',
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': process.env.PUBLIC_HOST!,
     },
   },
 });

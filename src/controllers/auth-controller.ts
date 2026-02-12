@@ -42,7 +42,7 @@ const createSendToken = (
     .json({ status: 'success', token, data: { user } });
 };
 
-export const signUp = catchAsync(async (request, response) => {
+export const signUp = catchAsync(async (request, response, next) => {
   const user = await User.create({
     name: request.body.name,
     email: request.body.email,
@@ -62,7 +62,7 @@ export const login = catchAsync(async (request, response, next) => {
   createSendToken(user, 200, response);
 });
 
-export const logout = (_: Request, response: Response) => {
+export const logout = (request: Request, response: Response) => {
   response
     .cookie('jwt', 'logged-out', {
       expires: new Date(Date.now() + 10 * 1000),
@@ -72,7 +72,7 @@ export const logout = (_: Request, response: Response) => {
     .json({ status: 'success' });
 };
 
-export const protect = catchAsync(async (request, _, next) => {
+export const protect = catchAsync(async (request, response, next) => {
   let token;
   if (
     request.headers.authorization &&
@@ -121,7 +121,7 @@ export const isLoggedIn = catchAsync(async (request, response, next) => {
 
 export const restrictTo =
   (...roles: ('user' | 'guide' | 'lead-guide' | 'admin')[]) =>
-  (request: Request, _: Response, next: NextFunction) => {
+  (request: Request, response: Response, next: NextFunction) => {
     if (!request.user || !roles.includes(request.user.role))
       return next(
         new AppError('You do not have permission on this action', 403),
@@ -143,7 +143,7 @@ export const forgotPassword = catchAsync(async (request, response, next) => {
       subject: 'Your password reset token (valid for 10 min)',
       message,
     });
-  } catch (_) {
+  } catch {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });

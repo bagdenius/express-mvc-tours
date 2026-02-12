@@ -6,7 +6,7 @@ export async function login(email: string, password: string) {
   try {
     const response = await axios({
       method: 'POST',
-      url: `http://localhost:8000/api/v1/users/login`,
+      url: `/api/v1/users/login`,
       data: { email, password },
     });
     if (response.data.status === 'success') {
@@ -31,10 +31,12 @@ export async function logout() {
   try {
     const response = await axios({
       method: 'GET',
-      url: 'http://localhost:8000/api/v1/users/logout',
+      url: `/api/v1/users/logout`,
     });
     if (response.data.status === 'success') location.reload();
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     showAlert('error', 'An error occured while logging out. Please try again.');
   }
 }

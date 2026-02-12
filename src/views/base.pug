@@ -4,10 +4,18 @@ html
     block head
       meta(charset='UTF-8')
       meta(name='viewport' content='width=device-width, initial-scale=1.0')
-      //- link(rel='stylesheet' href='/css/style.css')
       link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
       link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
       title Natours | #{title || 'Exciting tours for adventurous people'} 
+      if isDev
+        script(type="module" src="http://localhost:5173/main.ts")
+      else
+        - const entry = viteManifest['main.ts']
+        if entry.css
+          each cssFile in entry.css
+            link(rel="stylesheet" href=`/dist/${cssFile}`)
+        if entry.file
+          script(type="module" src=`/dist/${entry.file}`)
 
   body
     include _header
@@ -16,8 +24,5 @@ html
 
     include _footer
 
-    if isDev
-      script(type="module" src="http://localhost:5173/main.ts")
-    else
-      - const file = viteManifest['main.ts'].file
-      script(type="module", src=`/dist/${file}`)
+
+

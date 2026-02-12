@@ -28,26 +28,50 @@ const handleJsonWebTokenError = () =>
 const handleTokenExpiredError = () =>
   new AppError('Your token has expired. Please log in again', 401);
 
-function sendErrorDevelopment(error: any, response: Response) {
-  response.status(error.statusCode).json({
-    status: error.status,
+function sendErrorDevelopment(
+  error: any,
+  request: Request,
+  response: Response,
+) {
+  // api
+  if (request.originalUrl.startsWith('/api'))
+    return response.status(error.statusCode).json({
+      status: error.status,
+      message: error.message,
+      error: error,
+      stack: error.stack,
+    });
+  // view
+  return response.status(error.statusCode).render('error', {
+    title: 'Something went wrong...',
     message: error.message,
-    error: error,
-    stack: error.stack,
   });
 }
 
-function sendErrorProduction(error: any, response: Response) {
-  if (error.isOperational)
-    response
-      .status(error.statusCode)
-      .json({ status: error.status, message: error.message });
-  else {
+// warn: kinda unreadable
+function sendErrorProduction(error: any, request: Request, response: Response) {
+  // api
+  if (request.originalUrl.startsWith('/api')) {
+    if (error.isOperational)
+      return response
+        .status(error.statusCode)
+        .json({ status: error.status, message: error.message });
     console.error('ERROR 💥', error);
-    response
+    return response
       .status(500)
       .json({ status: 'error', message: 'Something went wrong!' });
   }
+  // view
+  if (error.isOperational)
+    return response.status(error.statusCode).render('error', {
+      title: 'Something went wrong...',
+      message: error.message,
+    });
+  console.error('ERROR 💥', error);
+  return response.status(error.statusCode).render('error', {
+    title: 'Something went wrong...',
+    message: 'Please try again later',
+  });
 }
 
 export function globalErrorHandler(
@@ -59,7 +83,7 @@ export function globalErrorHandler(
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development')
-    return sendErrorDevelopment(err, response);
+    return sendErrorDevelopment(err, request, response);
   if (process.env.NODE_ENV === 'production') {
     let error = Object.create(err);
     if (error.name === 'CastError') error = handleCastErrorDB(error);
@@ -69,6 +93,6 @@ export function globalErrorHandler(
       error = handleValidationErrorDB(error);
     if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError();
     if (error.name === 'TokenExpiredError') error = handleTokenExpiredError();
-    sendErrorProduction(error, response);
+    sendErrorProduction(error, request, response);
   }
 }

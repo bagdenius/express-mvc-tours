@@ -26,10 +26,7 @@ app.set('views', join(__dirname, 'src', 'views'));
 
 if (!isDev) {
   const manifest = JSON.parse(
-    readFileSync(
-      join(__dirname, '../public/dist/.vite/manifest.json'),
-      'utf-8',
-    ),
+    readFileSync(join(__dirname, '/public/dist/.vite/manifest.json'), 'utf-8'),
   );
   app.locals.viteManifest = manifest;
   app.locals.isDev = false;

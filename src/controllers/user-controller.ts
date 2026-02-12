@@ -25,7 +25,7 @@ export const deleteUser = deleteOne(User);
 
 export const setCurrentUser = (
   request: Request,
-  _: Response,
+  response: Response,
   next: NextFunction,
 ) => {
   request.params.id = request.user.id;
@@ -48,7 +48,7 @@ export const updateProfile = catchAsync(async (request, response, next) => {
   response.status(200).json({ status: 'success', data: { user } });
 });
 
-export const deleteProfile = catchAsync(async (request, response) => {
+export const deleteProfile = catchAsync(async (request, response, next) => {
   await User.findByIdAndUpdate(request.user!.id, { isActive: false });
   response.status(204).json({ status: 'success', data: null });
 });

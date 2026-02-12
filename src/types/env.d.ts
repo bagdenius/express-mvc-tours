@@ -3,6 +3,8 @@ declare module '*.css';
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
+      VITE_API_URL: string;
+
       NODE_ENV: 'development' | 'production';
       PORT: string;
 
