@@ -552,7 +552,7 @@ body {
 }
 
 .marker {
-  background-image: url('../img/pin.png');
+  background-image: url('/img/pin.png');
   background-size: cover;
   width: 32px;
   height: 40px;
@@ -608,6 +608,11 @@ body {
   scrollbar-width: none;
   -ms-scroll-snap-type: x mandatory;
   scroll-snap-type: x mandatory;
+
+  &:hover {
+    scrollbar-width: thin;
+    margin-bottom: -8px;
+  }
 }
 .reviews__card {
   width: 30rem;

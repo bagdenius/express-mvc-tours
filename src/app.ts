@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import cookieParser from 'cookie-parser';
@@ -17,9 +18,22 @@ import { AppError } from './utils/app-error.ts';
 
 export const app = express();
 
+const isDev = process.env.NODE_ENV === 'development';
+
 // set up view engine and views directory
 app.set('view engine', 'pug');
 app.set('views', join(__dirname, 'src', 'views'));
+
+if (!isDev) {
+  const manifest = JSON.parse(
+    readFileSync(
+      join(__dirname, '../public/dist/.vite/manifest.json'),
+      'utf-8',
+    ),
+  );
+  app.locals.viteManifest = manifest;
+  app.locals.isDev = false;
+} else app.locals.isDev = true;
 
 // serving static files
 app.use(express.static(join(__dirname, 'public')));
@@ -33,7 +47,7 @@ app.use(urlencoded({ extended: true }));
 // app.use(helmet());
 
 // query logs
-if (process.env.NODE_ENV === 'development') {
+if (isDev) {
   app.use(morgan('dev'));
 }
 

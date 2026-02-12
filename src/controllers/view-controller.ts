@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';

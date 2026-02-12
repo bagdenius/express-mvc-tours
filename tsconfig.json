@@ -1,12 +1,29 @@
 {
   "compilerOptions": {
-    "noEmit": true,
     "target": "esnext",
+    "useDefineForClassFields": true,
     "module": "nodenext",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
     "rewriteRelativeImportExtensions": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "verbatimModuleSyntax": true
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*", "path.ts"]
+  "include": ["src/**/*", "src/types/**/*.d.ts", "path.ts", "public/ts"]
 }

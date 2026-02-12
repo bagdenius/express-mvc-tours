@@ -1,16 +1,19 @@
-/* eslint-disable */
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-const mapElement = document.getElementById('map');
+import mapboxgl from 'mapbox-gl';
 
-if (mapElement) {
-  const locations = JSON.parse(
-    document.getElementById('map').dataset.locations,
-  );
+type Location = {
+  description: string;
+  type: 'Point';
+  coordinates: [number, number];
+  day: number;
+};
 
-  mapboxgl.accessToken =
-    'pk.eyJ1IjoiYmFnZGVuaXVzIiwiYSI6ImNtbGlqNHN2bjAzbnYzZnNpY2pkYXQ1bWIifQ.0NvKaygrMe2rd4dUDTgUDg';
+export function displayMap(locations: Location[]) {
   const map = new mapboxgl.Map({
     container: 'map',
+    accessToken:
+      'pk.eyJ1IjoiYmFnZGVuaXVzIiwiYSI6ImNtbGlqNHN2bjAzbnYzZnNpY2pkYXQ1bWIifQ.0NvKaygrMe2rd4dUDTgUDg',
     style: 'mapbox://styles/bagdenius/cmlijvfhc00iq01qxbx2oc1n9',
     scrollZoom: false,
   });
@@ -20,6 +23,7 @@ if (mapElement) {
   locations.forEach((location) => {
     const element = document.createElement('div');
     element.className = 'marker';
+
     new mapboxgl.Marker({
       element,
       anchor: 'bottom',
