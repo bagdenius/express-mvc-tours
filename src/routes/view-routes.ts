@@ -1,8 +1,16 @@
 import { Router } from 'express';
 
-import { getOverview, getTour } from '../controllers/view-controller.ts';
+import { isLoggedIn } from '../controllers/auth-controller.ts';
+import {
+  getLoginForm,
+  getOverview,
+  getTour,
+} from '../controllers/view-controller.ts';
 
 export const router = Router();
 
-router.get('/', getOverview);
-router.get('/tour/:slug', getTour);
+router
+  .use(isLoggedIn)
+  .get('/', getOverview)
+  .get('/tour/:slug', getTour)
+  .get('/login', getLoginForm);

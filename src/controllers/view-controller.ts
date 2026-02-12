@@ -1,3 +1,5 @@
+import type { NextFunction, Request, Response } from 'express';
+
 import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
@@ -16,3 +18,7 @@ export const getTour = catchAsync(async (request, response, next) => {
   if (!tour) return next(new AppError('Tour not found', 404));
   response.status(200).render('tour', { title: `${tour.name} Tour`, tour });
 });
+
+export const getLoginForm = (request: Request, response: Response) => {
+  response.status(200).render('login', { title: 'Log into your account' });
+};

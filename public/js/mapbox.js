@@ -1,34 +1,41 @@
 /* eslint-disable */
-const locations = JSON.parse(document.getElementById('map').dataset.locations);
 
-mapboxgl.accessToken =
-  'pk.eyJ1IjoiYmFnZGVuaXVzIiwiYSI6ImNtbGlqNHN2bjAzbnYzZnNpY2pkYXQ1bWIifQ.0NvKaygrMe2rd4dUDTgUDg';
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/bagdenius/cmlijvfhc00iq01qxbx2oc1n9',
-  scrollZoom: false,
-});
+const mapElement = document.getElementById('map');
 
-const bounds = new mapboxgl.LngLatBounds();
+if (mapElement) {
+  const locations = JSON.parse(
+    document.getElementById('map').dataset.locations,
+  );
 
-locations.forEach((location) => {
-  const element = document.createElement('div');
-  element.className = 'marker';
-  new mapboxgl.Marker({
-    element,
-    anchor: 'bottom',
-  })
-    .setLngLat(location.coordinates)
-    .addTo(map);
+  mapboxgl.accessToken =
+    'pk.eyJ1IjoiYmFnZGVuaXVzIiwiYSI6ImNtbGlqNHN2bjAzbnYzZnNpY2pkYXQ1bWIifQ.0NvKaygrMe2rd4dUDTgUDg';
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/bagdenius/cmlijvfhc00iq01qxbx2oc1n9',
+    scrollZoom: false,
+  });
 
-  new mapboxgl.Popup({ offset: 30, focusAfterOpen: false })
-    .setLngLat(location.coordinates)
-    .setHTML(`<p>Day ${location.day}: ${location.description}</p>`)
-    .addTo(map);
+  const bounds = new mapboxgl.LngLatBounds();
 
-  bounds.extend(location.coordinates);
-});
+  locations.forEach((location) => {
+    const element = document.createElement('div');
+    element.className = 'marker';
+    new mapboxgl.Marker({
+      element,
+      anchor: 'bottom',
+    })
+      .setLngLat(location.coordinates)
+      .addTo(map);
 
-map.fitBounds(bounds, {
-  padding: { top: 200, bottom: 150, left: 100, right: 100 },
-});
+    new mapboxgl.Popup({ offset: 30, focusAfterOpen: false })
+      .setLngLat(location.coordinates)
+      .setHTML(`<p>Day ${location.day}: ${location.description}</p>`)
+      .addTo(map);
+
+    bounds.extend(location.coordinates);
+  });
+
+  map.fitBounds(bounds, {
+    padding: { top: 200, bottom: 150, left: 100, right: 100 },
+  });
+}

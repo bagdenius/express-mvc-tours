@@ -57,6 +57,8 @@ export const signUp = catchAsync(
 export const login = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
     const { email, password } = request.body;
+    console.log(email, password);
+
     if (!email || !password)
       return next(new AppError('Please enter email and password', 400));
     const user = await User.findOne({ email }).select('+password');
@@ -74,7 +76,7 @@ export const protect = catchAsync(
       request.headers.authorization.startsWith('Bearer')
     ) {
       token = request.headers.authorization.split(' ').at(-1);
-    }
+    } else if (request.cookies.jwt) token = request.cookies.jwt;
     if (!token)
       return next(
         new AppError('You are not logged in. Please log in to get access', 401),
@@ -96,6 +98,19 @@ export const protect = catchAsync(
         ),
       );
     request.user = user;
+    next();
+  },
+);
+
+export const isLoggedIn = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const token = request.cookies.jwt;
+    if (!token) return next();
+    const decodedToken = await verifyToken(token, process.env.JWT_SECRET);
+    const user = await User.findById(decodedToken.id);
+    if (!user) return next();
+    if (user.isPasswordChangedAfter(decodedToken.iat!)) return next();
+    response.locals.user = user;
     next();
   },
 );

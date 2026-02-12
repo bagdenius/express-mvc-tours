@@ -1,9 +1,9 @@
 import { join } from 'node:path';
 
+import cookieParser from 'cookie-parser';
 import express, { urlencoded } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
 import { rateLimit } from 'express-rate-limit';
-import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 
@@ -59,6 +59,9 @@ app.use((request, result, next) => {
 
 // body parser with json in request.body
 app.use(express.json({ limit: '10kb' }));
+
+// cookie parser
+app.use(cookieParser());
 
 // data sanitization (noSQL query injection)
 app.use(mongoSanitize());
