@@ -26,3 +26,15 @@ export async function login(email: string, password: string) {
     }
   }
 }
+
+export async function logout() {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: 'http://localhost:8000/api/v1/users/logout',
+    });
+    if (response.data.status === 'success') location.reload();
+  } catch {
+    showAlert('error', 'An error occured while logging out. Please try again.');
+  }
+}

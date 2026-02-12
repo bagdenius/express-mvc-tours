@@ -25,34 +25,30 @@ export const deleteUser = deleteOne(User);
 
 export const setCurrentUser = (
   request: Request,
-  response: Response,
+  _: Response,
   next: NextFunction,
 ) => {
   request.params.id = request.user.id;
   next();
 };
 
-export const updateProfile = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    if (request.body.password || request.body.confirmPassword)
-      return next(
-        new AppError(
-          'This route is not for password updates. Please use /change-password',
-          400,
-        ),
-      );
-    const filteredBody = filterObjectByKeys(request.body, 'name', 'email');
-    const user = await User.findByIdAndUpdate(request.user!.id, filteredBody, {
-      new: true,
-      runValidators: true,
-    });
-    response.status(200).json({ status: 'success', data: { user } });
-  },
-);
+export const updateProfile = catchAsync(async (request, response, next) => {
+  if (request.body.password || request.body.confirmPassword)
+    return next(
+      new AppError(
+        'This route is not for password updates. Please use /change-password',
+        400,
+      ),
+    );
+  const filteredBody = filterObjectByKeys(request.body, 'name', 'email');
+  const user = await User.findByIdAndUpdate(request.user!.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+  response.status(200).json({ status: 'success', data: { user } });
+});
 
-export const deleteProfile = catchAsync(
-  async (request: Request, response: Response, next: NextFunction) => {
-    await User.findByIdAndUpdate(request.user!.id, { isActive: false });
-    response.status(204).json({ status: 'success', data: null });
-  },
-);
+export const deleteProfile = catchAsync(async (request, response) => {
+  await User.findByIdAndUpdate(request.user!.id, { isActive: false });
+  response.status(204).json({ status: 'success', data: null });
+});

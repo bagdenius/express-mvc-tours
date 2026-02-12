@@ -1,12 +1,14 @@
 import '../css/style.css';
 
-import { login } from './login.ts';
+import { login, logout } from './login.ts';
 import { displayMap } from './mapbox.ts';
 
+// tour page map
 const mapElement = document.getElementById('map');
 if (mapElement && mapElement.dataset.locations)
   displayMap(JSON.parse(mapElement.dataset.locations));
 
+// login form
 document.querySelector('.form')?.addEventListener('submit', (event) => {
   event.preventDefault();
   const email = (document.getElementById('email') as HTMLInputElement).value;
@@ -14,3 +16,6 @@ document.querySelector('.form')?.addEventListener('submit', (event) => {
     .value;
   login(email, password);
 });
+
+// logout button
+document.querySelector('.nav__el--logout')?.addEventListener('click', logout);
