@@ -57,8 +57,6 @@ export const signUp = catchAsync(
 export const login = catchAsync(
   async (request: Request, response: Response, next: NextFunction) => {
     const { email, password } = request.body;
-    console.log(email, password);
-
     if (!email || !password)
       return next(new AppError('Please enter email and password', 400));
     const user = await User.findOne({ email }).select('+password');

@@ -16,8 +16,6 @@ export const setTourUserIds = (
 ) => {
   if (!request.body.tour) request.body.tour = request.params.tourId;
   if (!request.body.user) request.body.user = request.user.id;
-  console.log(request.body.tour);
-
   next();
 };
 

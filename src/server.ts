@@ -5,8 +5,8 @@ import mongoose from 'mongoose';
 import { app } from './app.ts';
 
 process.on('uncaughtException', (error: Error) => {
-  console.log('❌ UNCAUGHT EXCEPTION! Shutting down...');
-  console.log(`${error.name}: ${error.message}`);
+  console.error('❌ UNCAUGHT EXCEPTION! Shutting down...');
+  console.error(`${error.name}: ${error.message}`);
   process.exit(1);
 });
 
@@ -24,7 +24,7 @@ const server = app.listen(port, () => {
 });
 
 process.on('unhandledRejection', (error: Error) => {
-  console.log('❌ UNHANDLED REJECTION! Shutting down...');
-  console.log(error);
+  console.error('❌ UNHANDLED REJECTION! Shutting down...');
+  console.error(error);
   server.close(() => process.exit(1));
 });
