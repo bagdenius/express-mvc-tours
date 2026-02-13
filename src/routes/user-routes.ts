@@ -16,6 +16,7 @@ import {
   deleteUser,
   getUser,
   getUsers,
+  resizeUserPhoto,
   setCurrentUser,
   updateProfile,
   updateUser,
@@ -35,7 +36,12 @@ router.patch('/reset-password/:token', resetPassword);
 router.use(protect);
 router.get('/profile', setCurrentUser, getUser);
 router.patch('/change-password', changePassword);
-router.patch('/update-profile', uploadUserPhoto, updateProfile);
+router.patch(
+  '/update-profile',
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateProfile,
+);
 router.delete('/delete-profile', deleteProfile);
 
 // restricted

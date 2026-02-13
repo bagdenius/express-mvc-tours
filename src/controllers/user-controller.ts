@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import multer, { type FileFilterCallback } from 'multer';
+import sharp from 'sharp';
 
 import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
@@ -12,14 +13,7 @@ import {
   updateOne,
 } from './handler-factory.ts';
 
-const multerStorage = multer.diskStorage({
-  destination: (request, file, callback) => callback(null, 'public/img/users'),
-  filename: (request, file, callback) => {
-    const extension = file.mimetype.split('/').at(-1);
-    callback(null, `user-${request.user.id}-${Date.now()}.${extension}`);
-  },
-});
-
+const multerStorage = multer.memoryStorage();
 const multerFilter = (
   request: Request,
   file: Express.Multer.File,
@@ -28,9 +22,23 @@ const multerFilter = (
   if (file.mimetype.startsWith('image/')) callback(null, true);
   else callback(new AppError('Not an image. Please upload only images.', 400));
 };
-
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 export const uploadUserPhoto = upload.single('photo');
+
+export const resizeUserPhoto = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  if (!request.file) return next();
+  request.file.filename = `user-${request.user.id}-${Date.now()}.webp`;
+  sharp(request.file.buffer)
+    .resize(512, 512)
+    .toFormat('webp')
+    .webp({ quality: 80 })
+    .toFile(`public/img/users/${request.file.filename}`);
+  next();
+};
 
 function filterObjectByKeys<T, K extends keyof T>(object: T, ...keys: K[]) {
   const filtered = {} as Pick<T, K>;
