@@ -1,11 +1,11 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { Tour } from '../models/tour-model.ts';
+import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
-import { User } from '../models/user-model.ts';
 
-export const getOverview = catchAsync(async (request, response, next) => {
+export const getOverview = catchAsync(async (_request, response, _next) => {
   const tours = await Tour.find();
   response.status(200).render('overview', { title: 'All tours', tours });
 });
@@ -20,15 +20,15 @@ export const getTour = catchAsync(async (request, response, next) => {
   response.status(200).render('tour', { title: `${tour.name} Tour`, tour });
 });
 
-export const getLoginForm = (request: Request, response: Response) => {
+export const getLoginForm = (_request: Request, response: Response) => {
   response.status(200).render('login', { title: 'Log into your account' });
 };
 
-export const getProfile = (request: Request, response: Response) => {
+export const getProfile = (_request: Request, response: Response) => {
   response.status(200).render('profile', { title: 'Profile' });
 };
 
-export const updateUserData = catchAsync(async (request, response, next) => {
+export const updateUserData = catchAsync(async (request, response, _next) => {
   const { name, email } = request.body;
   const user = await User.findByIdAndUpdate(
     request.user._id,

@@ -5,7 +5,7 @@ import { catchAsync } from '../utils/catchAsync.ts';
 import { QueryBuilder } from '../utils/query-builder.ts';
 
 export const getAll = <T>(Model: Model<T>) =>
-  catchAsync(async (request, response, next) => {
+  catchAsync(async (request, response, _next) => {
     // workaround to allow nested get reviews on tour. FIX IT!
     let filter = {};
     if (request.params.tourId) filter = { tour: request.params.tourId };
@@ -40,7 +40,7 @@ export const getOne = <T>(
   });
 
 export const createOne = <T>(Model: Model<T>) =>
-  catchAsync(async (request, response, next) => {
+  catchAsync(async (request, response, _next) => {
     const document = await Model.create(request.body);
     response.status(201).json({
       status: 'success',

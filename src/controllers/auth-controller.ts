@@ -42,7 +42,7 @@ const createSendToken = (
     .json({ status: 'success', token, data: { user } });
 };
 
-export const signUp = catchAsync(async (request, response, next) => {
+export const signUp = catchAsync(async (request, response, _next) => {
   const user = await User.create({
     name: request.body.name,
     email: request.body.email,

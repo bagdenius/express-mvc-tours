@@ -34,7 +34,7 @@ export const createTour = createOne(Tour);
 export const updateTour = updateOne(Tour);
 export const deleteTour = deleteOne(Tour);
 
-export const getTourStats = catchAsync(async (request, response, next) => {
+export const getTourStats = catchAsync(async (request, response, _next) => {
   const stats = await Tour.aggregate([
     { $match: { averageRating: { $gte: 4.5 } } },
     {
@@ -53,7 +53,7 @@ export const getTourStats = catchAsync(async (request, response, next) => {
   response.status(200).json({ status: 'success', data: { stats } });
 });
 
-export const getMonthlyPlan = catchAsync(async (request, response, next) => {
+export const getMonthlyPlan = catchAsync(async (request, response, _next) => {
   const year = +request.params.year!;
   const plan = await Tour.aggregate([
     { $unwind: '$startDates' },

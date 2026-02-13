@@ -48,7 +48,7 @@ export const updateProfile = catchAsync(async (request, response, next) => {
   response.status(200).json({ status: 'success', data: { user } });
 });
 
-export const deleteProfile = catchAsync(async (request, response, next) => {
+export const deleteProfile = catchAsync(async (request, response, _next) => {
   await User.findByIdAndUpdate(request.user!.id, { isActive: false });
   response.status(204).json({ status: 'success', data: null });
 });

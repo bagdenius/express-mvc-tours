@@ -59,7 +59,7 @@ app.use('/api', limiter);
 // make request.query writable
 // warn: kinda workaround, should to look up on this
 // should try Object.assign
-app.use((request, result, next) => {
+app.use((request, _eresult, next) => {
   Object.defineProperty(request, 'query', {
     ...Object.getOwnPropertyDescriptor(request, 'query'),
     value: request.query,
@@ -99,7 +99,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
-app.use((request, response, next) => {
+app.use((request, _response, next) => {
   next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });
 
