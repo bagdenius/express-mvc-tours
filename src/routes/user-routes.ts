@@ -19,6 +19,7 @@ import {
   setCurrentUser,
   updateProfile,
   updateUser,
+  uploadUserPhoto,
 } from '../controllers/user-controller.ts';
 
 export const router = Router();
@@ -34,7 +35,7 @@ router.patch('/reset-password/:token', resetPassword);
 router.use(protect);
 router.get('/profile', setCurrentUser, getUser);
 router.patch('/change-password', changePassword);
-router.patch('/update-profile', updateProfile);
+router.patch('/update-profile', uploadUserPhoto, updateProfile);
 router.delete('/delete-profile', deleteProfile);
 
 // restricted

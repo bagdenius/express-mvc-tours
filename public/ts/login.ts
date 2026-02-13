@@ -35,8 +35,15 @@ export async function logout() {
     });
     if (response.data.status === 'success') location.reload();
   } catch (error) {
-    console.log(error);
-
-    showAlert('error', 'An error occured while logging out. Please try again.');
+    if (isAxiosError(error)) {
+      console.error(error.message);
+      const serverMessage = error.response?.data.message;
+      if (serverMessage) {
+        console.warn(serverMessage);
+        showAlert('error', serverMessage);
+      }
+    } else {
+      console.error('An unexpected error occurred:', error);
+    }
   }
 }

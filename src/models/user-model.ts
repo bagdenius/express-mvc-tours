@@ -26,7 +26,7 @@ const userSchema = new Schema(
       required: [true, 'Please enter your email'],
       validate: [validator.isEmail, 'Please enter a valid email'],
     },
-    photo: { type: String },
+    photo: { type: String, default: 'default.jpg' },
     role: {
       type: String,
       enum: ['user', 'guide', 'lead-guide', 'admin'],
