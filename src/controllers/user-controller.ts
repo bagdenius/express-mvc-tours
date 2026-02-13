@@ -33,7 +33,7 @@ export const setCurrentUser = (
 };
 
 export const updateProfile = catchAsync(async (request, response, next) => {
-  if (request.body.password || request.body.confirmPassword)
+  if (request.body.password || request.body.passwordConfirm)
     return next(
       new AppError(
         'This route is not for password updates. Please use /change-password',

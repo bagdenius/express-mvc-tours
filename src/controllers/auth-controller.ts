@@ -47,7 +47,7 @@ export const signUp = catchAsync(async (request, response, _next) => {
     name: request.body.name,
     email: request.body.email,
     password: request.body.password,
-    confirmPassword: request.body.confirmPassword,
+    passwordConfirm: request.body.passwordConfirm,
   });
   createSendToken(user, 201, response);
 });
@@ -173,7 +173,7 @@ export const resetPassword = catchAsync(async (request, response, next) => {
       new AppError('Password reset token is invalid or has expired', 400),
     );
   user.password = request.body.password;
-  user.confirmPassword = request.body.confirmPassword;
+  user.passwordConfirm = request.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
@@ -188,7 +188,7 @@ export const changePassword = catchAsync(async (request, response, next) => {
   )
     return next(new AppError('Wrong current password', 401));
   user.password = request.body.password;
-  user.confirmPassword = request.body.confirmPassword;
+  user.passwordConfirm = request.body.passwordConfirm;
   await user.save();
   createSendToken(user, 200, response);
 });

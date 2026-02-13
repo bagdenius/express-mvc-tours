@@ -43,7 +43,7 @@ const userSchema = new Schema(
       required: [true, 'Please enter a password'],
       select: false,
     },
-    confirmPassword: {
+    passwordConfirm: {
       type: String,
       required: [true, 'Please confirm your password'],
       validate: {
@@ -86,7 +86,7 @@ const userSchema = new Schema(
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await hash(this.password, 12);
-  this.confirmPassword = undefined!;
+  this.passwordConfirm = undefined!;
 });
 
 userSchema.pre('save', function () {

@@ -2,16 +2,30 @@ import axios, { isAxiosError } from 'axios';
 
 import { showAlert } from './alert.ts';
 
-export async function updateProfile(name: string, email: string) {
+type updateProfileParams =
+  | { name: string; email: string; type: 'profile' }
+  | {
+      currentPassword: string;
+      password: string;
+      passwordConfirm: string;
+      type: 'password';
+    };
+
+export async function updateProfile(data: updateProfileParams) {
   try {
     const response = await axios({
       method: 'PATCH',
-      url: '/api/v1/users/update-profile',
-      data: { name, email },
+      url:
+        data.type === 'password'
+          ? '/api/v1/users/change-password'
+          : '/api/v1/users/update-profile',
+      data,
     });
     if (response.data.status === 'success') {
-      showAlert('success', 'Profile updated!');
-      location.reload();
+      showAlert(
+        'success',
+        `${data.type[0].toUpperCase() + data.type.slice(1)} updated!`,
+      );
     }
   } catch (error) {
     if (isAxiosError(error)) {

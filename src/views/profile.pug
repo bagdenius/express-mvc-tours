@@ -29,7 +29,7 @@ block content
       .user-view__content
         .user-view__form-container
           h2.heading-secondary.ma-bt-md Your account settings
-          form.form.form-profile
+          form.form.form-profile-data
             .form__group
               label.form__label(for='name') Name
               input#name.form__input(name='name' type='text' value=`${user.name}`  required)
@@ -40,15 +40,15 @@ block content
               img.form__user-photo(src=`/img/users/${user.photo || 'default.jpg'}` alt=`Photo of user ${user.name}`)
               a.btn-text(href='') Choose new photo
             .form__group.right
-              button.btn.btn--small.btn--green Save settings
+              button.btn.btn--small.btn--green.btn--update-profile Save settings
         .line &nbsp;
         .user-view__form-container
           h2.heading-secondary.ma-bt-md Password change
-          form.form.form-user-settings
+          form.form.form-user-password
             input#email(type='email' hidden value=`${user.email}` autocomplete='username')
             .form__group
-              label.form__label(for='password-current') Current password
-              input#password-current.form__input(type='password' placeholder='••••••••' required minlength='8' autocomplete='current-password')
+              label.form__label(for='current-password') Current password
+              input#current-password.form__input(type='password' placeholder='••••••••' required minlength='8' autocomplete='current-password')
             .form__group
               label.form__label(for='password') New password
               input#password.form__input(type='password' placeholder='••••••••' required minlength='8' autocomplete='new-password')
@@ -56,4 +56,4 @@ block content
               label.form__label(for='password-confirm') Confirm password
               input#password-confirm.form__input(type='password' placeholder='••••••••' required minlength='8' autocomplete='new-password')
             .form__group.right
-              button.btn.btn--small.btn--green Save password
+              button.btn.btn--small.btn--green.btn--change-password Save password
