@@ -101,6 +101,7 @@ export const protect = catchAsync(async (request, response, next) => {
       ),
     );
   request.user = user;
+  response.locals.user = user;
   next();
 });
 
