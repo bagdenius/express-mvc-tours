@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import cookieParser from 'cookie-parser';
-import express, { urlencoded } from 'express';
+import express from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
 import { rateLimit } from 'express-rate-limit';
 import hpp from 'hpp';
@@ -38,7 +38,7 @@ app.use(express.static(join(__dirname, 'public')));
 // extended qp for expressions in search query like [gte]
 // todo: specify for certain routes
 app.set('query parser', 'extended');
-app.use(urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // set security http headers
 // app.use(helmet());

@@ -6,11 +6,14 @@ import {
   getOverview,
   getProfile,
   getTour,
+  updateUserData,
 } from '../controllers/view-controller.ts';
 
 export const router = Router();
 
-router.get('/profile', protect, getProfile);
+router
+  .get('/profile', protect, getProfile)
+  .post('/submit-user-data', protect, updateUserData);
 
 router
   .use(isLoggedIn)
