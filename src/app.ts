@@ -1,10 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { expressMongoSanitize } from '@exortek/express-mongo-sanitize';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import mongoSanitize from 'express-mongo-sanitize';
 import { rateLimit } from 'express-rate-limit';
+import { xss } from 'express-xss-sanitizer';
+import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 
@@ -36,18 +39,55 @@ if (!isDev) {
 // serving static files
 app.use(express.static(join(__dirname, 'public')));
 
-// extended qp for expressions in search query like [gte]
-// todo: specify for certain routes
-app.set('query parser', 'extended');
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// requests compression
+app.use(compression());
 
 // set security http headers
-// app.use(helmet());
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: ["'self'", 'http://localhost:5173', 'blob:'],
+//         workerSrc: ["'self'", 'blob:'],
+//         styleSrc: [
+//           "'self'",
+//           "'unsafe-inline'",
+//           'https://api.mapbox.com',
+//           'https://fonts.googleapis.com',
+//         ],
+//         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+//         imgSrc: [
+//           "'self'",
+//           'data:',
+//           'blob:',
+//           'https://api.mapbox.com',
+//           'https://*.tiles.mapbox.com',
+//           'https://*.mapbox.com',
+//         ],
+//         connectSrc: [
+//           "'self'",
+//           'ws://localhost:5173',
+//           'https://api.mapbox.com',
+//           'https://events.mapbox.com',
+//         ],
+//       },
+//     },
+//   }),
+// );
+if (isDev) {
+  app.use(helmet({ contentSecurityPolicy: false }));
+} else {
+  app.use(helmet());
+}
 
 // query logs
 if (isDev) {
   app.use(morgan('dev'));
 }
+
+// cookie parser
+app.use(cookieParser());
 
 // rate limit
 const limiter = rateLimit({
@@ -57,29 +97,18 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// make request.query writable
-// warn: kinda workaround, should to look up on this
-// should try Object.assign
-app.use((request, _eresult, next) => {
-  Object.defineProperty(request, 'query', {
-    ...Object.getOwnPropertyDescriptor(request, 'query'),
-    value: request.query,
-    writable: true,
-  });
-  next();
-});
+// extended qp for expressions in search query like [gte]
+app.set('query parser', 'extended');
 
 // body parser with json in request.body
 app.use(express.json({ limit: '10kb' }));
-
-// cookie parser
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // data sanitization (noSQL query injection)
-app.use(mongoSanitize());
+app.use(expressMongoSanitize());
 
 // data sanitization (XSS)
-// app.use(xss());
+app.use(xss());
 
 // prevent parameter pollution
 app.use(

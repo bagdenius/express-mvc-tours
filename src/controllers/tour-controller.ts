@@ -68,12 +68,11 @@ export function aliasTopTours(
   response: Response,
   next: NextFunction,
 ) {
-  request.query = {
-    ...request.query,
+  Object.assign(request.query, {
     limit: '5',
     sort: '-averageRating,price',
     fields: 'name,price,averageRating,summary,difficulty',
-  };
+  });
   next();
 }
 

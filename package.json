@@ -1,5 +1,5 @@
 {
-  "name": "natours",
+  "name": "express-mvc-tours",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -21,12 +21,13 @@
     "data:delete": "node src/dev-data/data/import-dev-data.ts --delete"
   },
   "dependencies": {
+    "@exortek/express-mongo-sanitize": "^1.1.1",
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "express-mongo-sanitize": "^2.2.0",
     "express-xss-sanitizer": "^2.0.1",
     "hpp": "^0.2.3",
     "html-to-text": "^9.0.5",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.2.0",
     "@types/bcrypt": "^6.0.0",
+    "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/express-xss-sanitizer": "^2.0.0",

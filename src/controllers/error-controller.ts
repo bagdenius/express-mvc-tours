@@ -34,14 +34,17 @@ function sendErrorDevelopment(
   response: Response,
 ) {
   // api
-  if (request.originalUrl.startsWith('/api'))
+  if (request.originalUrl.startsWith('/api')) {
+    console.log(error);
     return response.status(error.statusCode).json({
       status: error.status,
       message: error.message,
       error: error,
       stack: error.stack,
     });
+  }
   // view
+  console.log(error);
   return response.status(error.statusCode).render('error', {
     title: 'Something went wrong...',
     message: error.message,
