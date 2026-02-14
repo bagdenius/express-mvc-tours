@@ -140,14 +140,12 @@ export const forgotPassword = catchAsync(async (request, response, next) => {
     return next(new AppError('No user found with provided email', 404));
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
-  const resetURL = `${request.protocol}://${request.get('host')}/api/v1/users/reset-password/${resetToken}`;
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password please ignore this message.`;
   try {
-    // await Email({
-    //   email: user.email,
-    //   subject: 'Your password reset token (valid for 10 min)',
-    //   message,
-    // });
+    const url = `${request.protocol}://${request.get('host')}/api/v1/users/reset-password/${resetToken}`;
+    await new Email(user, url).sendPasswordReset();
+    response
+      .status(200)
+      .json({ status: 'success', message: 'Token sent to email' });
   } catch {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
@@ -159,9 +157,6 @@ export const forgotPassword = catchAsync(async (request, response, next) => {
       ),
     );
   }
-  response
-    .status(200)
-    .json({ status: 'success', message: 'Token sent to email' });
 });
 
 export const resetPassword = catchAsync(async (request, response, next) => {
