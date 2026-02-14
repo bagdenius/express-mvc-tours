@@ -20,6 +20,7 @@ declare global {
       EMAIL_PASSWORD: string;
       EMAIL_HOST: string;
       EMAIL_PORT: string;
+      EMAIL_FROM: string;
     }
   }
 }

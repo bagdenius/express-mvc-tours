@@ -7,7 +7,7 @@ import type { Types } from 'mongoose';
 import { User, type UserDocument } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
-import { sendEmail } from '../utils/email.ts';
+import { Email } from '../utils/email.ts';
 
 const signToken = (id: Types.ObjectId) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -49,6 +49,10 @@ export const signUp = catchAsync(async (request, response, _next) => {
     password: request.body.password,
     passwordConfirm: request.body.passwordConfirm,
   });
+  const url = `${request.protocol}://${request.get('host')}/profile`;
+  console.log(url);
+
+  await new Email(user, url).sendWelcome();
   createSendToken(user, 201, response);
 });
 
@@ -139,11 +143,11 @@ export const forgotPassword = catchAsync(async (request, response, next) => {
   const resetURL = `${request.protocol}://${request.get('host')}/api/v1/users/reset-password/${resetToken}`;
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password please ignore this message.`;
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      message,
-    });
+    // await Email({
+    //   email: user.email,
+    //   subject: 'Your password reset token (valid for 10 min)',
+    //   message,
+    // });
   } catch {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
