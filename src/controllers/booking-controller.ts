@@ -4,6 +4,13 @@ import { Booking } from '../models/booking-model.ts';
 import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
+import {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} from './handler-factory.ts';
 
 export const getCheckoutSession = catchAsync(
   async (request, response, next) => {
@@ -47,3 +54,9 @@ export const createBookingCheckout = catchAsync(
     response.redirect(request.originalUrl.split('?')[0]);
   },
 );
+
+export const getBookings = getAll(Booking);
+export const getBooking = getOne(Booking);
+export const createBooking = createOne(Booking);
+export const updateBooking = updateOne(Booking);
+export const deleteBooking = deleteOne(Booking);

@@ -1,8 +1,22 @@
 import { Router } from 'express';
 
-import { protect } from '../controllers/auth-controller.ts';
-import { getCheckoutSession } from '../controllers/booking-controller.ts';
+import { protect, restrictTo } from '../controllers/auth-controller.ts';
+import {
+  createBooking,
+  deleteBooking,
+  getBooking,
+  getBookings,
+  getCheckoutSession,
+  updateBooking,
+} from '../controllers/booking-controller.ts';
 
 export const router = Router();
 
-router.get('/checkout-session/:tourId', protect, getCheckoutSession);
+// protected
+router.use(protect);
+router.get('/checkout-session/:tourId', getCheckoutSession);
+
+// restricted
+router.use(restrictTo('lead-guide', 'admin'));
+router.route('/').get(getBookings).post(createBooking);
+router.route('/:id').get(getBooking).patch(updateBooking).delete(deleteBooking);
