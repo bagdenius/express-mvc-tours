@@ -9,13 +9,13 @@ import {
   updateOne,
 } from './handler-factory.ts';
 
-export const setTourUserIds = (
+export const setUserTourIds = (
   request: Request,
   response: Response,
   next: NextFunction,
 ) => {
+  if (!request.body.user) request.body.user = request.user!.id;
   if (!request.body.tour) request.body.tour = request.params.tourId;
-  if (!request.body.user) request.body.user = request.user.id;
   next();
 };
 

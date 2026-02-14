@@ -13,9 +13,9 @@ import { User } from '../../models/user-model.ts';
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = dirname(__filename);
 
-const DB = process.env.DATABASE!.replace(
+const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
-  process.env.DATABASE_PASSWORD!,
+  process.env.DATABASE_PASSWORD,
 );
 
 await mongoose.connect(DB);

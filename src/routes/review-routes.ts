@@ -6,7 +6,7 @@ import {
   deleteReview,
   getReview,
   getReviews,
-  setTourUserIds,
+  setUserTourIds,
   updateReview,
 } from '../controllers/review-contoller.ts';
 
@@ -17,7 +17,7 @@ router.use(protect);
 router
   .route('/')
   .get(getReviews)
-  .post(restrictTo('user'), setTourUserIds, createReview);
+  .post(restrictTo('user'), setUserTourIds, createReview);
 
 router
   .route('/:id')

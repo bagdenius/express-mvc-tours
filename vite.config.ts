@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': process.env.PUBLIC_HOST!,
+      '/api': process.env.VITE_API_URL,
     },
   },
 });

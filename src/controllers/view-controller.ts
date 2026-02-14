@@ -1,5 +1,6 @@
-import type { Request, Response } from 'express';
+import { type Request, type Response } from 'express';
 
+import { Booking } from '../models/booking-model.ts';
 import { Tour } from '../models/tour-model.ts';
 import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
@@ -31,9 +32,22 @@ export const getProfile = (_request: Request, response: Response) => {
 export const updateUserData = catchAsync(async (request, response, _next) => {
   const { name, email } = request.body;
   const user = await User.findByIdAndUpdate(
-    request.user._id,
+    request.user!._id,
     { name, email },
     { new: true, runValidators: true },
   );
   response.status(200).render('profile', { title: 'Profile', user });
 });
+
+export const getProfileBookings = catchAsync(
+  async (request, response, next) => {
+    if (!request.user)
+      return next(
+        new AppError('You are not logged in. Please log in to get access', 401),
+      );
+    const bookings = await Booking.find({ user: request.user._id });
+    const tourIds = bookings.map((booking) => booking.tour);
+    const tours = await Tour.find({ _id: { $in: tourIds } });
+    response.status(200).render('overview', { title: 'Booked tours', tours });
+  },
+);
