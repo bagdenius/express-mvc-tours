@@ -8,6 +8,9 @@ import { updateProfile } from './update-profile.ts';
 const getInputValue = (id: string) =>
   (document.getElementById(id) as HTMLInputElement).value;
 
+const getInputFiles = (id: string) =>
+  (document.getElementById(id) as HTMLInputElement).files;
+
 // tour page map
 const mapElement = document.getElementById('map');
 if (mapElement && mapElement.dataset.locations)
@@ -36,9 +39,12 @@ document
     event.preventDefault();
     const button = document.querySelector('.btn--update-profile');
     if (button) button.innerHTML = '<span class="spinner"></span>';
-    const name = getInputValue('name');
-    const email = getInputValue('email');
-    await updateProfile({ name, email, type: 'profile' });
+    const formData = new FormData();
+    formData.append('name', getInputValue('name'));
+    formData.append('email', getInputValue('email'));
+    const files = getInputFiles('upload-profile-photo');
+    if (files?.length) formData.append('photo', files[0]);
+    await updateProfile(formData, 'profile');
     if (button) button.innerHTML = 'Save settings';
   });
 
@@ -50,15 +56,11 @@ changePasswordForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
   const button = document.querySelector('.btn--change-password');
   if (button) button.innerHTML = '<span class="spinner"></span>';
-  const currentPassword = getInputValue('current-password');
-  const password = getInputValue('password');
-  const passwordConfirm = getInputValue('password-confirm');
-  await updateProfile({
-    currentPassword,
-    password,
-    passwordConfirm,
-    type: 'password',
-  });
+  const formData = new FormData();
+  formData.append('currentPassword', getInputValue('current-password'));
+  formData.append('password', getInputValue('password'));
+  formData.append('passwordConfirm', getInputValue('password-confirm'));
+  await updateProfile(formData, 'password');
   if (button) button.innerHTML = 'Save password';
   changePasswordForm.reset();
 });

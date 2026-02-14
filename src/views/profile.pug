@@ -38,7 +38,8 @@ block content
               input#email.form__input(name='email' type='email' value=`${user.email}`, required)
             .form__group.form__photo-upload
               img.form__user-photo(src=`/img/users/${user.photo || 'default.jpg'}` alt=`Photo of user ${user.name}`)
-              a.btn-text(href='') Choose new photo
+              input#upload-profile-photo.form__upload(type="file" accept='image/*' name="photo")
+              label(for='upload-profile-photo') Choose new photo
             .form__group.right
               button.btn.btn--small.btn--green.btn--update-profile Save settings
         .line &nbsp;
