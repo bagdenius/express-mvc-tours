@@ -27,7 +27,7 @@ declare global {
       SENDGRID_USERNAME: string;
       SENDGRID_PASSWORD: string;
 
-      STRIPE_PUBLISHABLE_KEY: string;
+      VITE_STRIPE_PUBLISHABLE_KEY: string;
       STRIPE_SECRET_KEY: string;
     }
   }

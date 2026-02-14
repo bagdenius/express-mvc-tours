@@ -2,6 +2,7 @@ import '../css/style.css';
 
 import { login, logout } from './login.ts';
 import { displayMap } from './mapbox.ts';
+import { bookTour } from './stripe.ts';
 import { updateProfile } from './update-profile.ts';
 
 // helpers
@@ -49,18 +50,27 @@ document
   });
 
 // update user password form
-const changePasswordForm = document.querySelector<HTMLFormElement>(
-  '.form-user-password',
-);
-changePasswordForm?.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const button = document.querySelector('.btn--change-password');
-  if (button) button.innerHTML = '<span class="spinner"></span>';
-  const formData = new FormData();
-  formData.append('currentPassword', getInputValue('current-password'));
-  formData.append('password', getInputValue('password'));
-  formData.append('passwordConfirm', getInputValue('password-confirm'));
-  await updateProfile(formData, 'password');
-  if (button) button.innerHTML = 'Save password';
-  changePasswordForm.reset();
-});
+document
+  .querySelector<HTMLFormElement>('.form-user-password')
+  ?.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const button = document.querySelector('.btn--change-password');
+    if (button) button.innerHTML = '<span class="spinner"></span>';
+    const formData = new FormData();
+    formData.append('currentPassword', getInputValue('current-password'));
+    formData.append('password', getInputValue('password'));
+    formData.append('passwordConfirm', getInputValue('password-confirm'));
+    await updateProfile(formData, 'password');
+    if (button) button.innerHTML = 'Save password';
+    this.reset();
+  });
+
+// book tour button
+document
+  .getElementById('btn-book-tour')
+  ?.addEventListener('click', async function (event) {
+    event.preventDefault();
+    this.innerHTML = '<span class="spinner"></span>';
+    const { tourId } = this.dataset;
+    if (tourId) await bookTour(tourId);
+  });
