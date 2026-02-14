@@ -1,4 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
+import multer, { type FileFilterCallback } from 'multer';
+import sharp from 'sharp';
 
 import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
@@ -10,6 +12,56 @@ import {
   getOne,
   updateOne,
 } from './handler-factory.ts';
+
+const multerStorage = multer.memoryStorage();
+const multerFilter = (
+  request: Request,
+  file: Express.Multer.File,
+  callback: FileFilterCallback,
+) => {
+  if (file.mimetype.startsWith('image/')) callback(null, true);
+  else callback(new AppError('Not an image. Please upload only images.', 400));
+};
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+export const uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+export const resizeTourImages = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const files = request.files as {
+      imageCover?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+    };
+    const imageCover = files.imageCover;
+    const images = files.images;
+    if (!imageCover || !images) return next();
+    const timestamp = Date.now();
+    const outputDirectory = 'public/img/tours';
+    // cover image
+    request.body.imageCover = `tour-${request.params.id}-${timestamp}-cover.webp`;
+    await sharp(imageCover[0].buffer)
+      .resize(1920, 1280)
+      .toFormat('webp')
+      .webp({ quality: 80 })
+      .toFile(`${outputDirectory}/${request.body.imageCover}`);
+    // other images
+    request.body.images = [];
+    await Promise.all(
+      images.map(async (file, i) => {
+        const filename = `tour-${request.params.id}-${timestamp}-${i + 1}.webp`;
+        await sharp(file.buffer)
+          .resize(1920, 1280)
+          .toFormat('webp')
+          .webp({ quality: 80 })
+          .toFile(`${outputDirectory}/${filename}`);
+        request.body.images.push(filename);
+      }),
+    );
+    next();
+  },
+);
 
 export function aliasTopTours(
   request: Request,

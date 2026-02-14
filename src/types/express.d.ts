@@ -1,9 +1,15 @@
-import type { IUser } from '../models/user-model.ts';
+import type { UserDocument } from '../models/user-model.ts';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;
+      user?: UserDocument;
+      files?: {
+        imageCover?: Multer.File[];
+        images?: Multer.File[];
+      };
     }
   }
 }
+
+export {};

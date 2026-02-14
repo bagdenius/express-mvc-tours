@@ -25,20 +25,18 @@ const multerFilter = (
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 export const uploadUserPhoto = upload.single('photo');
 
-export const resizeUserPhoto = (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-) => {
-  if (!request.file) return next();
-  request.file.filename = `user-${request.user.id}-${Date.now()}.webp`;
-  sharp(request.file.buffer)
-    .resize(512, 512)
-    .toFormat('webp')
-    .webp({ quality: 80 })
-    .toFile(`public/img/users/${request.file.filename}`);
-  next();
-};
+export const resizeUserPhoto = catchAsync(
+  async (request: Request, response: Response, next: NextFunction) => {
+    if (!request.user || !request.file) return next();
+    request.file.filename = `user-${request.user.id}-${Date.now()}.webp`;
+    await sharp(request.file.buffer)
+      .resize(512, 512)
+      .toFormat('webp')
+      .webp({ quality: 80 })
+      .toFile(`public/img/users/${request.file.filename}`);
+    next();
+  },
+);
 
 function filterObjectByKeys<T, K extends keyof T>(object: T, ...keys: K[]) {
   const filtered = {} as Pick<T, K>;
@@ -57,7 +55,7 @@ export const setCurrentUser = (
   response: Response,
   next: NextFunction,
 ) => {
-  request.params.id = request.user.id;
+  if (request.user) request.params.id = request.user.id;
   next();
 };
 
