@@ -29,6 +29,8 @@ declare global {
 
       VITE_STRIPE_PUBLISHABLE_KEY: string;
       STRIPE_SECRET_KEY: string;
+
+      VITE_MAPBOX_PUBLIC_TOKEN: string;
     }
   }
 }

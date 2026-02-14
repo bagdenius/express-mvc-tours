@@ -12,8 +12,7 @@ type Location = {
 export function displayMap(locations: Location[]) {
   const map = new mapboxgl.Map({
     container: 'map',
-    accessToken:
-      'pk.eyJ1IjoiYmFnZGVuaXVzIiwiYSI6ImNtbGlqNHN2bjAzbnYzZnNpY2pkYXQ1bWIifQ.0NvKaygrMe2rd4dUDTgUDg',
+    accessToken: import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN,
     style: 'mapbox://styles/bagdenius/cmlijvfhc00iq01qxbx2oc1n9',
     scrollZoom: false,
   });
