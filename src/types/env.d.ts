@@ -26,6 +26,9 @@ declare global {
       SENDGRID_PORT: string;
       SENDGRID_USERNAME: string;
       SENDGRID_PASSWORD: string;
+
+      STRIPE_PUBLISHABLE_KEY: string;
+      STRIPE_SECRET_KEY: string;
     }
   }
 }

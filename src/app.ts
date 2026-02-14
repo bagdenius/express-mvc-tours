@@ -10,6 +10,7 @@ import morgan from 'morgan';
 
 import { __dirname } from '../path.ts';
 import { globalErrorHandler } from './controllers/error-controller.ts';
+import { router as bookingRouter } from './routes/booking-routes.ts';
 import { router as reviewRouter } from './routes/review-routes.ts';
 import { router as tourRouter } from './routes/tour-routes.ts';
 import { router as userRouter } from './routes/user-routes.ts';
@@ -99,6 +100,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 app.use((request, _response, next) => {
   next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });
