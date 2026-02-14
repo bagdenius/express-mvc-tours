@@ -18,9 +18,16 @@ export class Email {
   }
 
   createTransport() {
-    if (process.env.NODE_ENV === 'production') {
-      // sendgrid
-    }
+    if (process.env.NODE_ENV === 'production')
+      return createNodemailTransport({
+        host: process.env.SENDGRID_HOST,
+        port: +process.env.SENDGRID_PORT,
+        secure: true,
+        auth: {
+          user: process.env.SENDGRID_USERNAME,
+          pass: process.env.SENDGRID_PASSWORD,
+        },
+      });
     return createNodemailTransport({
       host: process.env.EMAIL_HOST,
       port: +process.env.EMAIL_PORT,

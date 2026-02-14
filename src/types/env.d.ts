@@ -16,11 +16,16 @@ declare global {
       JWT_EXPIRES_IN: string;
       JWT_EXPIRES_IN_COOKIE: string;
 
-      EMAIL_USERNAME: string;
-      EMAIL_PASSWORD: string;
+      EMAIL_FROM: string;
       EMAIL_HOST: string;
       EMAIL_PORT: string;
-      EMAIL_FROM: string;
+      EMAIL_USERNAME: string;
+      EMAIL_PASSWORD: string;
+
+      SENDGRID_HOST: string;
+      SENDGRID_PORT: string;
+      SENDGRID_USERNAME: string;
+      SENDGRID_PASSWORD: string;
     }
   }
 }

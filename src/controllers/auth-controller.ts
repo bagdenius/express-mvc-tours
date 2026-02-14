@@ -50,8 +50,6 @@ export const signUp = catchAsync(async (request, response, _next) => {
     passwordConfirm: request.body.passwordConfirm,
   });
   const url = `${request.protocol}://${request.get('host')}/profile`;
-  console.log(url);
-
   await new Email(user, url).sendWelcome();
   createSendToken(user, 201, response);
 });
