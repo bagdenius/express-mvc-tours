@@ -42,44 +42,45 @@ app.use(express.static(join(__dirname, 'public')));
 // requests compression
 app.use(compression());
 
-// set security http headers
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: ["'self'", 'http://localhost:5173', 'blob:'],
-//         workerSrc: ["'self'", 'blob:'],
-//         styleSrc: [
-//           "'self'",
-//           "'unsafe-inline'",
-//           'https://api.mapbox.com',
-//           'https://fonts.googleapis.com',
-//         ],
-//         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-//         imgSrc: [
-//           "'self'",
-//           'data:',
-//           'blob:',
-//           'https://api.mapbox.com',
-//           'https://*.tiles.mapbox.com',
-//           'https://*.mapbox.com',
-//         ],
-//         connectSrc: [
-//           "'self'",
-//           'ws://localhost:5173',
-//           'https://api.mapbox.com',
-//           'https://events.mapbox.com',
-//         ],
-//       },
-//     },
-//   }),
-// );
-if (isDev) {
-  app.use(helmet({ contentSecurityPolicy: false }));
-} else {
-  app.use(helmet());
-}
+// set http headers security
+if (isDev) app.use(helmet({ contentSecurityPolicy: false }));
+else
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          baseUri: ["'self'"],
+          objectSrc: ["'none'"],
+          scriptSrc: ["'self'"],
+          workerSrc: ["'self'", 'blob:'],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            'https://api.mapbox.com',
+            'https://fonts.googleapis.com',
+          ],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+          imgSrc: [
+            "'self'",
+            'data:',
+            'blob:',
+            'https://api.mapbox.com',
+            'https://*.tiles.mapbox.com',
+            'https://*.mapbox.com',
+          ],
+          connectSrc: [
+            "'self'",
+            'https://api.mapbox.com',
+            'https://events.mapbox.com',
+          ],
+        },
+      },
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginEmbedderPolicy: false,
+      referrerPolicy: { policy: 'no-referrer-when-downgrade' },
+    }),
+  );
 
 // query logs
 if (isDev) {

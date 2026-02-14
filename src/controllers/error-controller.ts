@@ -78,24 +78,36 @@ function sendErrorProduction(error: any, request: Request, response: Response) {
 }
 
 export function globalErrorHandler(
-  err: any,
+  error: any,
   request: Request,
   response: Response,
   _next: NextFunction,
 ) {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || 'error';
   if (process.env.NODE_ENV === 'development')
-    return sendErrorDevelopment(err, request, response);
+    return sendErrorDevelopment(error, request, response);
   if (process.env.NODE_ENV === 'production') {
-    let error = Object.create(err);
-    if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.name === 'MongoServerError' && error.code === 11000)
-      error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError')
-      error = handleValidationErrorDB(error);
-    if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError();
-    if (error.name === 'TokenExpiredError') error = handleTokenExpiredError();
-    sendErrorProduction(error, request, response);
+    // let productionError = Object.create(error);
+    let productionError = { ...error, message: error.message };
+    switch (productionError.name) {
+      case 'CastError':
+        productionError = handleCastErrorDB(productionError);
+        break;
+      case 'MongoServerError':
+        if (productionError.code === 11000)
+          productionError = handleDuplicateFieldsDB(productionError);
+        break;
+      case 'ValidationError':
+        productionError = handleValidationErrorDB(productionError);
+        break;
+      case 'JsonWebTokenError':
+        productionError = handleJsonWebTokenError();
+        break;
+      case 'TokenExpiredError':
+        productionError = handleTokenExpiredError();
+        break;
+    }
+    sendErrorProduction(productionError, request, response);
   }
 }
