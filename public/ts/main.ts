@@ -77,4 +77,8 @@ document
   });
 
 const alertMessage = document.querySelector('body')?.dataset.alert;
-alertMessage && showAlert('success', alertMessage, 8);
+if (alertMessage) {
+  showAlert('success', alertMessage, 8);
+  const newUrl = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, document.title, newUrl);
+}
