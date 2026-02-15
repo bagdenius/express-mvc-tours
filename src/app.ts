@@ -20,9 +20,10 @@ import { router as userRouter } from './routes/user-routes.ts';
 import { router as viewRouter } from './routes/view-routes.ts';
 import { AppError } from './utils/app-error.ts';
 
-export const app = express();
-
 const isDev = process.env.NODE_ENV === 'development';
+
+export const app = express();
+app.enable('trust proxy');
 
 // set up view engine and views directory
 app.set('view engine', 'pug');

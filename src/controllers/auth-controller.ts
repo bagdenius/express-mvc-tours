@@ -25,19 +25,19 @@ const verifyToken = (token: string, secret: string): Promise<JwtPayload> =>
 const createSendToken = (
   user: UserDocument,
   statusCode: number,
+  request: Request,
   response: Response,
 ) => {
   const token = signToken(user._id);
   user.password = undefined!;
-  const cookieOptions: CookieOptions = {
-    expires: new Date(
-      Date.now() + +process.env.JWT_EXPIRES_IN_COOKIE * 24 * 60 * 60 * 1000,
-    ),
-    httpOnly: true,
-  };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
   response
-    .cookie('jwt', token, cookieOptions)
+    .cookie('jwt', token, {
+      expires: new Date(
+        Date.now() + +process.env.JWT_EXPIRES_IN_COOKIE * 24 * 60 * 60 * 1000,
+      ),
+      httpOnly: true,
+      secure: request.secure || request.header('x-forwarded-proto') === 'https',
+    })
     .status(statusCode)
     .json({ status: 'success', token, data: { user } });
 };
@@ -51,7 +51,7 @@ export const signUp = catchAsync(async (request, response, _next) => {
   });
   const url = `${request.protocol}://${request.get('host')}/profile`;
   await new Email(user, url).sendWelcome();
-  createSendToken(user, 201, response);
+  createSendToken(user, 201, request, response);
 });
 
 export const login = catchAsync(async (request, response, next) => {
@@ -61,7 +61,7 @@ export const login = catchAsync(async (request, response, next) => {
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await User.isCorrectPassword(password, user.password)))
     return next(new AppError('Invalid email or password', 401));
-  createSendToken(user, 200, response);
+  createSendToken(user, 200, request, response);
 });
 
 export const logout = (request: Request, response: Response) => {
@@ -174,7 +174,7 @@ export const resetPassword = catchAsync(async (request, response, next) => {
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
-  createSendToken(user, 200, response);
+  createSendToken(user, 200, request, response);
 });
 
 export const changePassword = catchAsync(async (request, response, next) => {
@@ -187,5 +187,5 @@ export const changePassword = catchAsync(async (request, response, next) => {
   user.password = request.body.password;
   user.passwordConfirm = request.body.passwordConfirm;
   await user.save();
-  createSendToken(user, 200, response);
+  createSendToken(user, 200, request, response);
 });
