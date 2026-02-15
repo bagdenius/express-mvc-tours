@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import type { CookieOptions, NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { Types } from 'mongoose';
 

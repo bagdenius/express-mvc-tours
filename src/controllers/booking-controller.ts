@@ -1,8 +1,9 @@
+import type { NextFunction, Request, Response } from 'express';
 import Stripe from 'stripe';
 
-import type { NextFunction, Request, Response } from 'express';
 import { Booking } from '../models/booking-model.ts';
 import { Tour } from '../models/tour-model.ts';
+import { User } from '../models/user-model.ts';
 import { AppError } from '../utils/app-error.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import {
@@ -12,7 +13,6 @@ import {
   getOne,
   updateOne,
 } from './handler-factory.ts';
-import { User } from '../models/user-model.ts';
 
 export const getCheckoutSession = catchAsync(
   async (request, response, next) => {
