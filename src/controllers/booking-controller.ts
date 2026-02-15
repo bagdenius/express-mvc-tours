@@ -33,7 +33,9 @@ export const getCheckoutSession = catchAsync(
             product_data: {
               name: `${tour.name} Tour`,
               description: tour.summary,
-              images: [`https://natours.dev/img/tours/${tour?.imageCover}`],
+              images: [
+                `${request.protocol}://${request.get('host')}/img/tours/${tour?.imageCover}`,
+              ],
             },
             currency: 'usd',
             unit_amount: tour.price * 100,
