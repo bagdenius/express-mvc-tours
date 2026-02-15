@@ -1,3 +1,4 @@
 import dotenv from 'dotenv';
+import path from 'node:path';
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: path.resolve(import.meta.dirname, '../.env') });

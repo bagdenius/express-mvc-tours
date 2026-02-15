@@ -35,7 +35,7 @@ function sendErrorDevelopment(
 ) {
   // api
   if (request.originalUrl.startsWith('/api')) {
-    console.log(error);
+    console.error(error);
     return response.status(error.statusCode).json({
       status: error.status,
       message: error.message,
@@ -44,7 +44,7 @@ function sendErrorDevelopment(
     });
   }
   // view
-  console.log(error);
+  console.error(error);
   return response.status(error.statusCode).render('error', {
     title: 'Something went wrong...',
     message: error.message,
