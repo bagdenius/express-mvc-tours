@@ -1,5 +1,5 @@
 export function showAlert(
-  type: 'success' | 'error',
+  type: string,
   message: string,
   displayTime: number = 5,
 ) {

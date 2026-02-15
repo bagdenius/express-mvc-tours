@@ -76,9 +76,13 @@ document
     if (tourId) await bookTour(tourId);
   });
 
+// alert
 const alertMessage = document.querySelector('body')?.dataset.alert;
+const alertType =
+  document.querySelector('body')?.dataset.alertType || 'success';
+const alertTime = document.querySelector('body')?.dataset.alertTime || 5;
 if (alertMessage) {
-  showAlert('success', alertMessage, 8);
+  showAlert(alertType, alertMessage, +alertTime);
   const newUrl = window.location.origin + window.location.pathname;
   window.history.replaceState({}, document.title, newUrl);
 }
