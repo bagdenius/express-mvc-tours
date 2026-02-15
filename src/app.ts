@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { expressMongoSanitize } from '@exortek/express-mongo-sanitize';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { xss } from 'express-xss-sanitizer';
@@ -36,6 +37,10 @@ if (!isDev) {
   app.locals.viteManifest = manifest;
   app.locals.isDev = false;
 } else app.locals.isDev = true;
+
+// cors
+app.use(cors());
+app.options(/.*/, cors());
 
 // serving static files
 app.use(express.static(join(__dirname, 'public')));
