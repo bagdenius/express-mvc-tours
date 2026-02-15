@@ -59,15 +59,15 @@ export const setAlerts = (
 ) => {
   const { alert } = request.query;
   switch (alert) {
-    case 'login-successful':
+    case 'login-success':
       response.locals.alert = 'Logged in successfully!';
       break;
-    case 'logout-successful':
+    case 'logout-success':
       response.locals.alert = 'Logged out successfully!';
       break;
-    case 'booking':
+    case 'booking-success':
       response.locals.alert =
-        "You successfully booked a tour! Please check your email for a confiramtion. If your booking doesn't show up here immediately please come back later.";
+        "You successfully booked a tour! Please check your email for a confirmation. If your booking doesn't show up here immediately please come back later.";
       response.locals.alertTime = 20;
       break;
   }

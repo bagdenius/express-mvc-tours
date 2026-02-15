@@ -11,7 +11,7 @@ export async function login(email: string, password: string) {
     });
     if (response.data.status === 'success') {
       showAlert('success', 'Logged in successfully!');
-      location.assign('/?alert=login-successful');
+      location.assign('/?alert=login-success');
     }
   } catch (error) {
     if (isAxiosError(error)) {
@@ -34,7 +34,7 @@ export async function logout() {
       url: `/api/v1/users/logout`,
     });
     if (response.data.status === 'success')
-      location.assign('/?alert=logout-successful');
+      location.assign('/?alert=logout-success');
   } catch (error) {
     if (isAxiosError(error)) {
       console.error(error.message);
