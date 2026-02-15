@@ -11,7 +11,7 @@
     "dev:client": "vite",
     "build:server": "tsc",
     "build:client": "vite build",
-    "start": "vite build && cross-env NODE_ENV=production node src/server.ts",
+    "start": "cross-env NODE_ENV=production node src/server.ts",
     "debug": "ndb node src/server.ts",
     "format": "prettier --write .",
     "lint": "eslint . --debug",

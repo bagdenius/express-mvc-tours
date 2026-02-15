@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { isLoggedIn, protect } from '../controllers/auth-controller.ts';
-import { createBookingCheckout } from '../controllers/booking-controller.ts';
 import {
   getLoginForm,
   getOverview,
@@ -20,6 +19,6 @@ router
 
 router
   .use(isLoggedIn)
-  .get('/', createBookingCheckout, getOverview)
+  .get('/', getOverview)
   .get('/tour/:slug', getTour)
   .get('/login', getLoginForm);

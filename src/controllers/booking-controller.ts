@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 
+import type { NextFunction, Request, Response } from 'express';
 import { Booking } from '../models/booking-model.ts';
 import { Tour } from '../models/tour-model.ts';
 import { AppError } from '../utils/app-error.ts';
@@ -11,6 +12,7 @@ import {
   getOne,
   updateOne,
 } from './handler-factory.ts';
+import { User } from '../models/user-model.ts';
 
 export const getCheckoutSession = catchAsync(
   async (request, response, next) => {
@@ -20,8 +22,7 @@ export const getCheckoutSession = catchAsync(
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      // url is not secure now
-      success_url: `${request.protocol}://${request.get('host')}/?user=${user._id}&tour=${tour._id}&price=${tour.price}`,
+      success_url: `${request.protocol}://${request.get('host')}/profile/bookings`,
       cancel_url: `${request.protocol}://${request.get('host')}/tour/${tour.slug}`,
       customer_email: user.email,
       client_reference_id: tour.id,
@@ -45,15 +46,35 @@ export const getCheckoutSession = catchAsync(
   },
 );
 
-export const createBookingCheckout = catchAsync(
-  async (request, response, next) => {
-    // warn: temporary / unsecure
-    const { user, tour, price } = request.query;
-    if (!tour || !user || !price) return next();
-    await Booking.create({ user, tour, price: +price });
-    response.redirect(request.originalUrl.split('?')[0]);
-  },
-);
+const createBookingCheckout = async (session: Stripe.Checkout.Session) => {
+  const user = (await User.findOne({ email: session.customer_email }))!._id;
+  const tour = session.client_reference_id!;
+  const price = session.line_items!.data[0].amount_total / 100;
+  await Booking.create({ user, tour, price });
+};
+
+export const webhookCheckoutCompleted = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const signature = request.header('stripe-signature');
+  if (!signature)
+    return next(new AppError('Stripe signature is not defined', 400));
+  let event;
+  try {
+    event = Stripe.webhooks.constructEvent(
+      request.body,
+      signature,
+      process.env.STRIPE_CHECKOUT_COMPLETED_WEBHOOK_SECRET,
+    );
+  } catch (error: any) {
+    return response.status(400).send(`Webhook error: ${error.message}`);
+  }
+  if (event.type === 'checkout.session.completed')
+    createBookingCheckout(event.data.object);
+  response.status(200).json({ received: true });
+};
 
 export const getBookings = getAll(Booking);
 export const getBooking = getOne(Booking);

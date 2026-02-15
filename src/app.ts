@@ -13,6 +13,7 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 
 import { __dirname } from '../path.ts';
+import { webhookCheckoutCompleted } from './controllers/booking-controller.ts';
 import { globalErrorHandler } from './controllers/error-controller.ts';
 import { router as bookingRouter } from './routes/booking-routes.ts';
 import { router as reviewRouter } from './routes/review-routes.ts';
@@ -107,6 +108,13 @@ app.use('/api', limiter);
 // extended qp for expressions in search query like [gte]
 app.set('query parser', 'extended');
 
+// raw body routes
+app.post(
+  '/checkout-completed',
+  express.raw({ type: 'application/json' }),
+  webhookCheckoutCompleted,
+);
+
 // body parser with json in request.body
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -137,6 +145,7 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
+
 app.use((request, _response, next) => {
   next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });
