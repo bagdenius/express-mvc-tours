@@ -17,7 +17,7 @@ html
         if entry.file
           script(type="module" src=`/dist/${entry.file}`)
 
-  body
+  body(data-alert=`${alert || ''}`)
     include _header
 
     block content

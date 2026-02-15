@@ -22,7 +22,7 @@ export const getCheckoutSession = catchAsync(
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      success_url: `${request.protocol}://${request.get('host')}/profile/bookings`,
+      success_url: `${request.protocol}://${request.get('host')}/profile/bookings?alert=booking`,
       cancel_url: `${request.protocol}://${request.get('host')}/tour/${tour.slug}`,
       customer_email: user.email,
       client_reference_id: tour.id,

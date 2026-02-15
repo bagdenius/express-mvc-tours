@@ -7,10 +7,13 @@ import {
   getProfile,
   getProfileBookings,
   getTour,
+  setAlerts,
   updateUserData,
 } from '../controllers/view-controller.ts';
 
 export const router = Router();
+
+router.use(setAlerts);
 
 router
   .get('/profile', protect, getProfile)

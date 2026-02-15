@@ -1,4 +1,5 @@
 import '../css/style.css';
+import { showAlert } from './alert.ts';
 
 import { login, logout } from './login.ts';
 import { displayMap } from './mapbox.ts';
@@ -74,3 +75,6 @@ document
     const { tourId } = this.dataset;
     if (tourId) await bookTour(tourId);
   });
+
+const alertMessage = document.querySelector('body')?.dataset.alert;
+alertMessage && showAlert('success', alertMessage, 8);

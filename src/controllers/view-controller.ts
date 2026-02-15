@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express';
+import { type NextFunction, type Request, type Response } from 'express';
 
 import { Booking } from '../models/booking-model.ts';
 import { Tour } from '../models/tour-model.ts';
@@ -51,3 +51,15 @@ export const getProfileBookings = catchAsync(
     response.status(200).render('overview', { title: 'Booked tours', tours });
   },
 );
+
+export const setAlerts = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { alert } = request.query;
+  if (alert === 'booking')
+    response.locals.alert =
+      "You successfully booked a tour! Please check your email for a confiramtion. If your booking doesn't show up here immediately please come back later.";
+  next();
+};
